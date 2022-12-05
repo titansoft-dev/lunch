@@ -1,0 +1,42 @@
+﻿
+@{
+    ViewBag.Title = "Slack";
+}
+
+<script>
+    @if (TempData["IsSuccess"] != null)
+    {
+        <text>alert("@TempData["IsSuccess"]")</text>
+    }
+    $(document).ready(function () {
+        $('#slackId-submit').click(function () {
+            if ($('#slackId').val() == ''){
+                alert("Slack Id is empty!");
+                return false;
+            }
+            if (confirm("Do you really update it?") == true) {
+                $('#submitForm').submit();
+            } else {
+                return false;
+            }
+        })
+    });
+</script>
+
+<body>
+    <form id="submitForm" action="@Url.Action("Index","Slack")" method="post" role="form" style="display: block;">
+        <div class="form-group">
+            <h3>Slack Id：</h3>
+            @foreach (var customer in @Model.customer)
+            {
+                <input type="text" name="slackId" id="slackId" class="form-control" value="@customer.SlackId" />
+            }
+
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6 col-sm-offset-3">
+                <input type="submit" name="slackId-submit" id="slackId-submit" class="form-control btn btn-login btn-primary" value="Submit">
+            </div>
+        </div>
+    </form>
+</body>

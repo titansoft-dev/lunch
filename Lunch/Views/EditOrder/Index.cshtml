@@ -1,0 +1,124 @@
+﻿
+@{
+    if (Model.IsAdmin == true)
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+}
+
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+
+<script>
+    function GoBackToTotalCost() {
+        window.location.href = "/TotalCost/Index";
+    }
+    function DeleteOrder(element){
+        if (confirm("Delete the "+$(element).closest("tr").children().filter(":eq(3)").children().val()+"?") == true) {
+            $.ajax({
+                url:"@Url.Action("DeleteOrder","EditOrder")",
+                type:"POST",
+                data:{"orderId":$(element).closest("tr").children().filter(":eq(1)").val()},
+                success:function(){
+                    location.reload();
+                }
+            });
+        }
+        else {
+            return;
+        }
+    }
+
+    function ChooseRes(ResName){
+        if(ResName == "--Select--"){
+            return;
+        }
+        $("#selectedRes").attr("value",ResName);
+        $("#selectResForm").submit();
+    }
+    $(document).ready(function() {
+        var nameInput = $("input[name='name']");
+        nameInput.each(function() {
+            if (@Json.Encode(Model.IsAdmin) || ($(this).val() === '@Model.Username' && @Json.Encode(!Model.IsClose))) {   //若Model.Admin為true則修改餐點權限全部解開，其餘依名子解開自己的
+                $(this).parent().siblings().children().removeAttr('readonly', 'readonly');
+                //$(this).parent().siblings().children().removeAttr('style');
+                $(this).parent().siblings().last().children().attr({ "type":"button","style":"background-color:#6363FF;","value":"Delete","onclick":"DeleteOrder(this)"})     //與帳號姓名相同才打開刪除鍵
+            }
+        });
+    });
+</script>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-7">
+            <h2>Edit Order</h2>
+            <h2>
+                @Model.ResName
+            @if (Model.IsClose)
+            {
+                <span style="color:red">(已收單)</span>
+            }
+        </h2>
+        <form action="@Url.Action("Index","EditOrder")" method="post" id="selectResForm">
+            <input type="hidden" name="ResName" id="selectedRes" value="" />
+            <select onchange="ChooseRes(this.value)" style="font-size:large;width:100px ">
+                <option>--Select--</option>
+                @foreach (var res in Model.notSettledRes)
+                {
+                    <option>@res.Name</option>
+                }
+            </select>
+        </form>
+        <br />
+        <form action="@Url.Action("Change", "EditOrder")" class="form-horizontal" id="submitForm" method="post">
+            <table>
+                <thead>
+                    <tr>
+                        <td style="width:100px;">Name</td>
+                        <td style="width:100px;">Date</td>
+                        <td style="width:100px;">Meal</td>
+                        <td style="width:100px;">Cost</td>
+                        <td style="width:100px;">Delete</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var Total in @Model.Orders)
+                    {
+                    <tr>
+                        <input type="hidden" name="customerId" value="@Total.CustomerId" />
+                        <input type="hidden" name="orderId" value="@Total.OrderId" />
+                        <td><input type="text" style="width:100px;" name="name" value="@Total.Name" readonly /></td>
+                        <td><input type="text" style="width:100px;" name="time" value="@Total.Time.ToString("yyyy-MM-dd")" disabled /></td>
+                        <td><input type="text" style="width:200px;" name="meal" value="@Total.Meal"  readonly/></td>
+                        <td><input type="text" style="width:100px;" name="cost" value="@Total.Cost"  readonly/></td>
+                        <td><input type="text" style="width:100px;" readonly/></td>
+                        @*<td><input type="text" style="width:100px;" value="@Total.Name"  name="name" readonly /></td>
+        <td><input type="date" style="width:100px;" value="@Total.Time.ToString("yyyy-MM-dd")" name="meal"  disabled /></td>
+        <td><input type="text" style="width:100px;" value="@Total.Meal" name="meal" readonly /></td>
+        <td><input type="text" style="width:100px;" value="@Total.Cost" name="cost" readonly /></td>
+        <td><input type="text" style="background-color:#D1D1D1" readonly /></td>*@
+                    </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="form-group" style="margin-top: 45px;">
+                @if (!Model.IsClose || Model.IsAdmin)
+                {
+                    <input type="Submit" class="btn btn-primary" value=" submit" /><br><br> <!--上面的script透過id抓這裡的值上去submit-->
+                }
+                <input type="button" class="btn btn-primary" value="Back" onclick="GoBackToTotalCost()" />
+            </div>
+        </form>
+    </div>
+
+
+    <div class="col-lg-5">
+        <h1>
+            電話:@ViewBag.pushrestel
+        </h1>
+        <img src="@ViewBag.pushresurl" width="400" height="600" />
+    </div>
+</div>
+</div>

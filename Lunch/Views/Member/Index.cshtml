@@ -1,0 +1,143 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml"; 
+}
+
+@{
+    ViewBag.Title = "Index";
+}
+@{var index = 0; @*var authority ="";*@}
+<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<link rel="stylesheet"
+      href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css"></style>
+<script type="text/javascript"
+        src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript"
+        src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+@*<script>
+    $(document).ready(function () {
+        $("#member").dataTable();
+    })
+</script>*@
+<script>
+    function UpdateAuthority(element) {
+        var Cid = $(element).siblings().filter(":eq(0)").val();
+        var permission = $("input[id=authority]:checked").val();
+
+        $.ajax({
+            type:"POST",
+            url: '@Url.Action("Index","Member")',
+            data: { customerid: Cid, Permission: permission },
+            success: updatesuccess,
+            error: function () {
+                alert('fail');
+            }
+        })
+        function updatesuccess() {
+            alert("修改成功");
+            location.reload();
+        }
+
+    }
+    function GoBack() {
+        window.location.href = "/Restaurant/Index"
+    }
+    function DeleteMember(element) {
+        if (confirm("Do you really want to delete this member ?") == true) {
+
+            var Cid = $(element).siblings().filter(":eq(0)").val();
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Delete","Member")',
+                data: { customerid: Cid },
+                success: deletesuccess,
+                error: function () {
+                    alert('fail');
+                }
+            })
+            function deletesuccess() {
+                alert("修改成功");
+                location.reload();
+            }
+        }
+        else {
+            return;
+        }
+    }
+    x = 0;
+
+    function ResetPassword(element) {
+        if (confirm("Do you really want to reset password for this member ?") == true) {
+
+            var Cid = $(element).siblings().filter(":eq(0)").val();
+            $.post("/Member/ResetPW", { CustomerId:Cid },
+                function (message) {
+                    if (message != "") {
+                        alert("密碼為:" + message);
+                    }
+                });
+        }
+        else {
+            return;
+        }
+    }
+</script>
+<style>
+
+</style>
+<h2>Member</h2>
+<table id="member">
+    <thead>
+        <tr>
+            <th>Name</th>
+           <!-- <th style="position:absolute; left:500px">Permission Level</th>-->
+            <th><p style="padding-left:60px">Permission Level</p></th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @{string count = "0";
+          string group;}
+        @foreach (var AllMember in @Model)
+        {
+            
+            var Cid = "Cid" + index;
+            var permit = "";
+            group = "authority" + count;
+            //authority = "authority" + index;
+            if (AllMember.Permission == 1) { permit = "Administrator"; }
+            else if (AllMember.Permission == 2) { permit = "Delegator"; }
+            else if (AllMember.Permission == 3) { permit = "Pending"; }
+            else if (AllMember.Permission == 4) { permit = "Deleted!"; }
+            else { permit = "User"; }
+            <tr>
+                <td>@AllMember.Name</td>
+                <td>
+                    <ul>
+                        <li style="list-style:none;">
+                            <input type="hidden" name="@Cid" id="@Cid" value="@AllMember.CustomerId" />
+                            @*<input type="hidden" name="@name" id="@name" value="@AllMember.CustomerId" />*@
+                            <input type="text" name="permit" id="permit" value="@permit" disabled />
+                            <label><input type="radio" name="@group" id="authority" value="3"> Pending</label>
+                            <label><input type="radio" name="@group" id="authority" value="0"> User</label>
+                            <label><input type="radio" name="@group" id="authority" value="2"> Delegator</label>
+                            <label> <input type="radio" name="@group" id="authority" value="1"> Administrator</label>
+                            <input type="button" class=" btn-info btn-sm" name="update" id="update" value="Adjust" onclick="UpdateAuthority(this)" />
+                            <input type="button" class=" btn-default btn-sm" name="update" id="update" value="Delete Member" onclick="DeleteMember(this)" />
+                            <input type="button" class=" btn-warning btn-sm" name="update" id="update" value="Reset Password" onclick="ResetPassword(this)" />
+                        </li>
+
+                    </ul>
+                </td>
+            </tr>
+            int temp = Convert.ToInt32(count);
+            temp += 1;
+            count = Convert.ToString(temp);
+            index += 1;
+        }
+    </tbody>
+</table>
+<div align="center">
+    <input type="button" class="btn btn-default btn-md" onclick="GoBack()" value="Back"/>
+</div>
+

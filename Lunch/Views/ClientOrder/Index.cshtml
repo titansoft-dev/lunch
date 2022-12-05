@@ -1,0 +1,412 @@
+﻿@{
+    if (Model.Admin == true)
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+
+@{
+    ViewBag.Title = "clientOrderPage";
+    string isDisabled = (Model.currentRestaurant.IsClose && !Model.Admin) ? "disabled" : "";
+}
+
+<style>
+    .mg-image img {
+        -webkit-transform: scale(1.25); /* Safari and Chrome */
+        -moz-transform: scale(1.25); /* Firefox */
+        -ms-transform: scale(1.25); /* IE 9 */
+        -o-transform: scale(1.25); /* Opera */
+        transform: scale(1.25);
+    }
+</style>
+
+<h2>@Model.currentRestaurant.Name
+    @if(Model.currentRestaurant.IsClose)
+    {
+        <span style="color:red">(已收單)</span>
+    }
+</h2>
+<script>
+    @if (TempData["alertMessage"] != null)
+    {
+        <text>alert("@TempData["alertMessage"]")</text>
+    }
+    @if (TempData["OrderSuccess"] != null)
+    {
+        <text>alert("@TempData["OrderSuccess"]")</text>
+    }
+
+    $(function() {
+        $('[data-toggle="popover"]').popover();
+    });
+
+    var ordernumber = 0; //作為顯示每人餐點的table的<tr>ID辨識之用，(在下方的ajax-success裡)
+    var autoRenew;
+    $(document).ready(function() {
+        $('#submit').click(function() {
+            //clearInterval(autoRenew);
+            var obj = $('#menuImg').prop('src');
+            if (obj.indexOf('stop.jpg') >= 0) { //Order Settled判斷
+                alert("Order Settled!");
+                return;
+            }
+
+            if ($('#order').val() === '' || $('#cost').val() === '') { //判斷使用者有無輸入餐點及金額
+                alert("Some column is empty!");
+                return;
+            }
+            if ($('#cost').val().match(/[^\x00-\xff]/g)) {
+                alert("請用半型數字");
+                return;
+            }
+            if(@ViewBag.balance<-1000){
+                $('#order').val("");
+                $('#cost').val("");
+                alert("你已負債1000元，請先到OD儲值再來點餐!");
+                return;
+            }
+            if (confirm("Do you really mean it?") == true) {
+                if (@Model.currentRestaurant.Category== 3) {
+                    alert("You order the " + $('#order').val() + '(' + $('#sweetness').val() + $('#ice').val() + ')' + ' and total cost is ' + $('#cost').val());
+                } else {
+                    alert("You order the " + $('#order').val() + ' and total cost is ' + $('#cost').val());
+                }
+            } else {
+                return;
+            }
+            $('#submitForm').submit();
+        });
+        $('#notorder').click(function() {
+            //clearInterval(autoRenew);
+            var obj = $('#menuImg').prop('src');
+            if (obj.indexOf('stop.jpg') >= 0) { //Order Settled判斷
+                alert("Order Settled!")
+                return;
+            }
+            if ($('#order').val() === '' && $('#cost').val() === '') { //判斷使用者有無輸入餐點及金額
+                if (confirm("Do you really mean it?") == true) {
+                    alert("You order nothing today!");
+                } else {
+                    return;
+                }
+                $('#submitForm').submit();
+
+            } else {
+                alert("All column most be empty!");
+                return;
+            }
+        });
+
+        if ("@Model.currentRestaurant.MenuUrl" === "/images/Menus/stop.jpg") { //若熊貓圖出現，取消follow功能
+            $("#followList").attr({ "type": "hidden" });
+        } else {
+            renewOrder();
+        }
+
+        $('#Recommend').change(function() {
+            var text = $("#Recommend option:selected").text();
+            var pair = text.split("--");
+            $("#order").val(pair[0]);
+            $("#cost").val(pair[1]);
+        });
+
+        $('#Restaurants').change(function() {
+            var restaurantId = $(this).val();
+            location.href = '/ClientOrder/Index?restaurantId=' + restaurantId;
+        });
+
+        if ($("#TransferMsg").html() !== "") {
+            $.toast({
+                heading: "information",
+                text: "<p>"+$("#TransferMsg").html()+"</p><p>click <a href='/Transfer/Index#List'>here<a/> to take a look</p>",
+                icon: "info",
+                hideAfter: false,
+                position:{top:50,right:80}
+            });
+        }
+        if (@Model.currentRestaurant.Category!= 3) {
+            $("#drink").hide();
+        }
+        else {
+            $("#recommend_group").hide();
+        }
+    });
+    function ToggleZoom(element) {
+        var parent = $(element).parent();
+        if (parent.hasClass("mg-image")) {
+            parent.removeClass("mg-image");
+        } else {
+            parent.addClass("mg-image");
+        }
+    }
+
+    function renewOrder() {
+        if (ordernumber > 1) {
+            ordernumber = 0;
+        }
+        $.ajax({
+            url: "@Url.Action("Index", "ClientOrder")",
+            data: { "data": "1","restaurantId": $("#currentRestaurantId").val() }, //原本為{data:"1"}
+            type: "GET",
+            success: function(jconvert) {
+                var jsonInfo = JSON.parse(jconvert);
+                @*var model = @Html.Raw(Json.Encode(Model.allOrder))*@
+
+                $("#renew").empty(); //將欄位清空，下面的each再重載
+
+                $.each(jsonInfo.allOrder, function(index, value) { //js很難用razor的foreach，所以用jquery的
+                    if (value.Name === jsonInfo.user) {
+                        var renewrow = $("<tr>").attr({ "id": "renewInfo" + ordernumber });
+                        var name = $("<td>").attr({ "class": "renewname" }).css("background-color", "yellow").html(value.Name);
+                        var meal = $("<td>").attr({ "class": "renewmeal" }).css("background-color", "yellow").html(value.Meal);
+                        var cost = $("<td>").attr({ "class": "renewcost" }).css("background-color", "yellow").html(value.Cost);
+                        $("#renew").append(renewrow);
+                        $("#renewInfo" + ordernumber).append(name);
+                        $("#renewInfo" + ordernumber).append(meal);
+                        $("#renewInfo" + ordernumber).append(cost);
+                        ordernumber += 1;
+                    } else {
+                        var renewrow = $("<tr>").attr({ "id": "renewInfo" + ordernumber });
+                        var name = $("<td>").attr({ "class": "renewname" }).html(value.Name);
+                        var meal = $("<td>").attr({ "class": "renewmeal" }).html(value.Meal);
+                        var cost = $("<td>").attr({ "class": "renewcost" }).html(value.Cost);
+                        var follow = $("<input>").attr({ "class": "btnfollow", "id": "btnfollow" + ordernumber, "type": "button", "onclick": "followclick(this)", "value": "Follow" }); //設定按鈕按下會跑到followclick(下面)
+                        $("#renew").append(renewrow);
+                        $("#renewInfo" + ordernumber).append(name);
+                        $("#renewInfo" + ordernumber).append(meal);
+                        $("#renewInfo" + ordernumber).append(cost);
+                        @if (isDisabled=="")
+                        {
+                            <text>$("#renewInfo" + ordernumber).append(follow);</text>
+                        }
+
+                        ordernumber += 1;
+                    }
+                });
+            },
+            error: function(xhr, status, err) {
+                alert("error");
+                console.log(xhr);
+                console.log(status);
+                console.log(err);
+            }
+        });
+    }
+
+    function followclick(element) {
+        if(@ViewBag.balance<-1000){
+            alert("你已負債1000元，請先到OD儲值再來點餐!");
+        }else{
+            var followmeal = $(element).siblings()[1].innerHTML; //innerHTML可以取值
+            var followcost = $(element).siblings()[2].innerHTML;
+            var customerName = $("#name").val();
+            var sweetness = $("#sweetness").val();
+            var ice = $("#ice").val();
+
+            $.ajax({
+                url: "@Url.Action("Index")",
+                type: "POST",
+                data: { "inputname": customerName, "inputorder": followmeal, "inputcost": followcost, "restaurantId": @Model.currentRestaurant.RestaurantId },
+                success: function() {
+                    renewOrder();
+                },
+                error: function() {
+                    alert("Failed to order meal");
+                }
+            });
+        }
+    }
+
+    function GoToTotalPage() {
+        clearInterval(autoRenew);
+        window.location.href = "/TotalCost/Index";
+
+    }
+
+    function ShowFollowList() {
+        renewOrder();
+    }
+
+    function EditOrder() {
+        window.location.href = "/EditOrder/Index";
+    }
+
+    function SelectName(name) {
+        if (name == "Nobody") {
+            $('#name').val("@ViewBag.custname");
+        } else {
+            $('#name').val(name);
+        }
+    }
+    @if (TempData["AlertMsg"]!=null)
+    {
+        <text>alert('@TempData["AlertMsg"]')</text>
+    }
+</script>
+<div style="display: none;" id="TransferMsg">@ViewData["TransferMsg"]</div>
+<div class="row">
+    <div class="col-lg-6">
+        <img src="@Model.currentRestaurant.MenuUrl" style="max-width:100%;max-height:100%;" id="menuImg" data-toggle="modal" data-target="#myModal" />        <!--圖-->
+    </div>
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    
+                </div>
+                <div class="modal-body">
+                    <img class="img-responsive" style="cursor: pointer;max-width:100%;max-height:100%;" src="@Model.currentRestaurant.MenuUrl" onclick="ToggleZoom(this);" />
+                </div>
+                <div class="modal-footer">
+                    
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <!--Admin可以代點，選擇人名-->
+        <!--點餐-->
+        <form action="@Url.Action("Index", "ClientOrder")" class="form-horizontal" id="submitForm" method="post">
+            @{
+                if (Model.currentRestaurant.RestaurantId != 54)
+                {
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Restaurant(@Model.restaurants.Count): </label>
+                        <div class="col-md-8 text-center">
+                            <select class="form-control" id="Restaurants">
+                                @foreach (var restaurant in Model.restaurants)
+                                {
+                                    var selected = string.Empty;
+                                    if (restaurant.RestaurantId == Model.currentRestaurant.RestaurantId)
+                                    {
+                                        selected = "selected=\"selected\"";
+                                    }
+                                    <option value="@restaurant.RestaurantId" @selected>@restaurant.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+            }
+            <div class="form-group">
+                <label class="col-lg-2 control-label">Name: </label>
+                <div class="col-lg-7">
+                    <input class="form-control" id="name" name="inputname" type="text" value="@ViewBag.custname" readonly /> <!--顯示姓名-->
+                </div>
+                <div class="col-lg-3">
+                    @if (Model.Admin)
+                    {
+                        <select name="CustomerName" onchange="SelectName(this.value)">
+                            <option>Nobody</option>
+                            @foreach (var customer in Model.allCustomer)
+                            {
+                                if (ViewBag.custname != customer.Name)
+                                {
+                                    <option>@customer.Name</option>
+                                }
+                            }
+                        </select>
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-2 control-label">Order: </label>
+                <div class="col-lg-6">
+                    <input class="form-control" name="inputorder" type="text" id="order" value="" @isDisabled /> <!--輸入餐點-->
+                </div>
+                <div class="col-lg-2">
+                    <input class="form-control" name="inputcost" type="text" id="cost" value="" @isDisabled /> <!--輸入價錢-->
+                    <input type="hidden" id="currentRestaurantId" name="restaurantId" value="@Model.currentRestaurant.RestaurantId">
+                </div>
+
+                <label class="col-lg-1 control-label" style="text-align: left;">元</label>
+
+            </div>
+            <div class="form-group" id="drink">
+                <label class="col-lg-2 control-label">Sweetness: </label>
+                <div class="col-lg-4">
+                    <select class="form-control" id="sweetness" name="inputsweetness" @isDisabled>
+                        <option value="正常甜">正常甜</option>
+                        <option value="少糖">少糖</option>
+                        <option value="半糖">半糖</option>
+                        <option value="微糖">微糖</option>
+                        <option value="無糖">無糖</option>
+                        <option value="一分糖">一分糖</option>
+                    </select>
+                </div>
+                <label class="col-lg-1 control-label">Ice: </label>
+                <div class="col-lg-3">
+                    <select class="form-control" id="ice" name="inputice" @isDisabled>
+                        <option value="正常冰">正常冰</option>
+                        <option value="少冰">少冰</option>
+                        <option value="微冰">微冰</option>
+                        <option value="去冰">去冰</option>
+                        <option value="常溫">常溫</option>
+                        <option value="熱">熱</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group" id="recommend_group">
+                <label class="col-lg-2 control-label">Recommend: </label>
+                <div class="col-md-8 text-center">
+                    <select class="form-control" id="Recommend" @isDisabled>
+                        <option></option>
+                        @foreach (var rec in Model.recommends)
+                        {
+                            <option>@rec.Name -- @rec.Cost</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-12 text-center">
+                    @*@{Html.RenderAction("MiniGame", "Games", null);}*@
+                </div>
+            </div>
+            <div class="form-group" style="margin-top: 45px;">
+                <span class="col-lg-offset-1 col-lg-11 btn btn-primary btn-lg" id="submit" @isDisabled>Submit</span> <!--上面的script透過id抓這裡的值上去submit-->
+            </div>
+            <div class="form-group" style="margin-top: 30px;">
+                <span class="col-lg-offset-1 col-lg-11 btn btn-primary btn-lg" id="notorder" @isDisabled>Not Ordering Today</span> <!--上面的script透過id抓這裡的值上去submit-->
+            </div>
+            <div class="form-group" style="text-align: center">
+                @if (ViewBag.balance != null)
+                {
+                    if (ViewBag.Balance < 200)
+                    {
+                        <img id="scarygif" src="~/images/nomoney.png" />}
+                    <strong style="font-size: xx-large">Balance:@ViewBag.balance</strong>
+                }
+                else
+                {
+                    <img id="scarygif" src="~/images/nomoney.png" />
+                    <strong style="font-size: xx-large">目前餘額:0</strong>
+                }
+            </div>
+
+            <div class="container">
+                <div>
+                    @*<input type="button" class="btn btn-primary" value="統計" onclick="GoToTotalPage()" />*@
+                    <input type="button" class="btn btn-primary" value="Follow List" onclick="ShowFollowList()" id="followList" />
+                    <input type="button" class="btn btn-primary" value="Edit" onclick="EditOrder()" />
+                    <button type="button" class="btn btn-default" data-toggle="popover" title="@Model.currentRestaurant.Name" data-placement="right" data-content="@Model.currentRestaurant.Comment">see comment</button>
+                </div>
+            </div>
+        </form>
+
+
+        <div class="row">
+            <!--這個div用來乘載ajax傳下來的每人餐點資訊-->
+            <table class="col-lg-6 col-lg-offset-3">
+                <tbody id="renew"></tbody>
+            </table>
+
+        </div>
+    </div>
+</div>

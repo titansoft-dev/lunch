@@ -1,0 +1,232 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+@{
+    ViewBag.Title = "Top Up";
+}
+
+<style>
+    table.fixed { table-layout:fixed; }
+    table.fixed td { overflow: hidden; }
+</style>
+<script>
+    function BackToRestaurant() {
+        window.location.href="/Restaurant/Index"
+    }
+    function ajaxtest(str) {
+        $("input[name='customername']").val($("#custname").find('option:selected').attr("id"));   //將選單所選之選項存到下方的Hidden欄，以便後端取值
+        $("input[name='str2']").val(str);   //將選單所選之選項存到下方的Hidden欄，以便後端取值
+        if (str == "nothing")
+            alert("must choose someone")    //因為選擇"無"時會error所以下判斷式避免此情況
+        else {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Index","TopUp")',
+                data: { str2: str },   //JSON格式的寫法{參數:內容, 參數:內容, Object[]}
+                success: successfunc,
+                error: function () {
+                    alert('error');
+                }
+            });
+        }
+        function successfunc(data) {
+            window.setInterval
+            document.getElementById("mybalance").innerHTML = data;  //把id為mybalance欄位裡的內容換成後端抓回來的Balance
+        }
+
+        
+        //$('#SumbitTopup').click(function() {
+           
+        //});
+          
+        @*function ajaxtest(str) {      //這是另一種可用的傳值方法
+        alert(str)
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("Index","TopUp")',
+            data:{str2:str},
+            success:successfunc,
+            error: function () {
+                alert('error');
+            }
+        });
+    }
+
+    function Submit() {
+        $("#customername").val($("#custname").val());
+
+    }
+
+    function successfunc(data) {
+
+        $('#remaincost').html(data.Data);
+       
+        //var i;
+        //for(i=0;i<data.length;i++)
+        //{
+        //    console.log(data[i].Name);
+        //}
+    }*@
+
+    }
+    function limitajax(li) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("Index2","TopUp")',
+            data: { limit: li},
+            success: limitsuccess,
+            error: function () {
+                alert('error');
+            }
+        });
+        function limitsuccess(customerbalance) {
+            var result = JSON.parse(customerbalance);
+            $("#limitcustomer").empty();
+            $.each(result, function (index, value) {
+                var crow = $("<tr>").attr({ "id": "limitrow"+index });
+                var cname = $("<td>").attr({ "class": "cname" }).html(value.Name);
+                var cbalance = $("<td>").attr({ "class": "cbalance" }).html(value.Balance);
+                $("#limitcustomer").append(crow);
+                $("#limitrow"+index).append(cname);
+                $("#limitrow"+index).append(cbalance);
+            });
+        }
+    }
+    function submitTopup() {
+       
+        if ($('#custname').val() == "nothing") return;
+        if (confirm("Do you really mean it?") == true) {
+            $('#TopupForm').submit();
+        } else {
+            return;
+        }
+    }
+</script>
+
+<div class="row">
+    <form id="TopupForm" method="post">
+        <div class="col-lg-4">
+            <h2>Account</h2>
+            <select id="custname" onchange="ajaxtest(this.value)">
+                <!--將所選的選項傳至上面的javascript-->
+        <option value="nothing">無</option>
+        @foreach (var customername in @Model.custname)
+        {
+            <option id="@customername.Name" value="@customername.CustomerId">@customername.Name</option>
+        }
+    </select>
+            @*<div style="position:absolute; top:80px;right:500px">
+        <h2>總覽：</h2>
+        <table class="fixed">
+            <thead>
+                <tr>
+                    <th>姓名</th>
+                    <th>餘額</th>
+                </tr>
+            </thead>
+            <col width="200px" />
+            <tbody>
+                @foreach (var customername in @Model.custname)
+                {
+                    <tr>
+                        <td><span id="@customername.Name" value="@customername.Name">@customername.Name</span></td>
+                        <td><span id="@customername.Balance" value="@customername.Balance">@customername.Balance</span><br></td>
+
+                    </tr>
+                    <script type="text/javascript">
+                        x = x+@customername.Balance;
+                    </script>
+                }
+                <script>
+                    document.write(x);
+                    document.write("<br/>");
+                </script>
+            </tbody>
+        </table>
+            </div>*@
+
+
+            <h3>
+                <span>Balance:</span>
+                <span id="mybalance"></span>                          <!--顯示剩餘金額-->
+            </h3>
+
+            Amount:
+            <input name="TopUpNumber" type="number" value="0" />              <!--輸入要儲存之金額-->
+            <input type="hidden" name="customername" value="str2"> <!--隱藏狀態，要將名子送至後端，因取值是用name取，所以在Model裡加入customername的get,set-->
+            <input type="hidden" name="str2" value="">
+            <br><br />
+            Detail:
+            <input type="text" name="detail" value="Top Up" />
+            <br><br />
+            <span>
+                <input type="button" class="btn btn-primary" onclick="BackToRestaurant()" value="Back" />                              <!--退回主頁-->
+            </span>
+            <span>
+                <input type="button" class="btn btn-primary" id="SumbitTopup" onclick="submitTopup()" value="Submit" />         <!--確認儲存-->
+            </span>
+    </div>
+        
+        <div class="col-lg-4">
+            <div>
+        <h2>Balance：</h2>
+    </div>
+            <div >
+       <select id="limit" name="limit" onchange="limitajax(this.value)">
+           <option value="0">0元以下</option>
+           <option value="50">50元以下</option>
+           <option value="100">100元以下</option>
+           <option value="200" selected="selected">200元以下</option>
+           <option value="500">500元以下</option>
+           <option value="1000">1000元以下</option>
+       </select>
+                <br><br />
+                <table width="200">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Balance</th>
+                </tr>
+            </thead>
+            <tbody id="limitcustomer">
+                @foreach (var cust in @Model.custbalance)
+                {
+                    <tr>
+                        <td>@cust.Name</td>
+                        <td>@cust.Balance</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+        </div>
+        <div class="col-lg-4">            
+                <h2>Summary：</h2>
+                <table class="fixed">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+                    <col width="200px" />
+                    <tbody>
+                        @{ var total = 0;}
+                        @foreach (var customername in @Model.custname)
+                        {
+                            <tr>
+                                <td><span id="@customername.Name" value="@customername.Name">@customername.Name</span></td>
+                                <td><span id="@customername.Balance" value="@customername.Balance">@customername.Balance</span><br></td>
+                            </tr>
+                            total += customername.Balance;                      
+                        }
+                        <tr>
+                            <td><h3>Total:</h3></td>
+                            <td><h3>@total</h3></td>
+                        </tr>
+                    </tbody>
+                </table>
+                    
+        </div>
+</form>
+</div>

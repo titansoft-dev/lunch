@@ -1,0 +1,18 @@
+﻿@model Lunch.Entity.Customer
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>請註冊</h2>
+
+<form action="@Url.Action("Index","Register")" method="post">
+    姓名:
+    <input type="text" name="registername" value="" /><BR>
+    密碼:
+    <input type="password" name="registerpassword" value=""/><BR>
+    <input type="submit" />
+
+    @ViewBag.text
+    @ViewBag.text2
+</form>
+

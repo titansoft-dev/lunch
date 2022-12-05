@@ -1,0 +1,18 @@
+﻿@if (ViewBag.ShowGame == "Y")
+{
+    if (Request.UserAgent.ToLower().IndexOf("mobile") > -1
+     && Request.Url.LocalPath.ToLower() != "/games")
+    {
+        @Html.ActionLink("Play Game", "Index", "Games", new { userName = ViewBag.UserName }, new { @class = "btn btn-success" });
+    }
+    else
+    {
+        <div id="game">
+        </div>
+        <script src="~/Scripts/soundjs-0.6.2.min.js"></script>
+        <script src="~/Scripts/pixi.min.js"></script>
+        <script src="~/Scripts/game.js"></script>
+    }
+}
+
+

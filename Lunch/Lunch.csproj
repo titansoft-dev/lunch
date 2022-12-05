@@ -1,0 +1,539 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9F699750-A7DF-44F1-A43E-1DA92CDB8D10}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Lunch</RootNamespace>
+    <AssemblyName>Lunch</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <UseGlobalApplicationHostFile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <Use64BitIISExpress />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.4.1.9004, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="client_page\client_chooseOrderPage.aspx" />
+    <Content Include="Content\bootcards-desktop.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\font-awesome.css" />
+    <Content Include="Content\font-awesome.min.css" />
+    <Content Include="Content\images\11.gif" />
+    <Content Include="Content\images\26.gif" />
+    <Content Include="Content\images\backgroud.jpg" />
+    <Content Include="Content\images\start.png" />
+    <Content Include="Content\images\volume-off.png" />
+    <Content Include="Content\images\volume-up.png" />
+    <Content Include="Content\jquery.toast.css" />
+    <Content Include="Content\Login.css" />
+    <Content Include="Content\magicsuggest-min.css" />
+    <Content Include="Content\musics\backlash.wav" />
+    <Content Include="Content\musics\bckmusic.mp3" />
+    <Content Include="Content\musics\bullet.wav" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Data\record.xml" />
+    <Content Include="fonts\fontawesome-webfont.svg" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="fonts\icomoon.svg" />
+    <Content Include="Global.asax" />
+    <Content Include="images\Menus\17街炒飯.jpg" />
+    <Content Include="images\Menus\stop.jpg" />
+    <Content Include="images\Menus\三媽臭臭鍋.jpg" />
+    <Content Include="images\Menus\上井御廚.jpg" />
+    <Content Include="images\Menus\五井拉麵.jpg" />
+    <Content Include="images\Menus\仁義牛肉麵.jpg" />
+    <Content Include="images\Menus\元林魯肉飯.jpg" />
+    <Content Include="images\Menus\劉記麵食.jpg" />
+    <Content Include="images\Menus\劉記麵食館.jpg" />
+    <Content Include="images\Menus\卜派羹麵.jpg" />
+    <Content Include="images\Menus\古早味蓋飯.jpg" />
+    <Content Include="images\Menus\嘉義火雞肉飯.jpg" />
+    <Content Include="images\Menus\壱賀牛屋.jpg" />
+    <Content Include="images\Menus\大拇哥.jpg" />
+    <Content Include="images\Menus\大豐爌肉飯.jpg" />
+    <Content Include="images\Menus\天慈素食.jpg" />
+    <Content Include="images\Menus\太祖魷魚羹.jpg" />
+    <Content Include="images\Menus\小王子炒飯炒麵.jpg" />
+    <Content Include="images\Menus\廣豐燒臘.jpg" />
+    <Content Include="images\Menus\彩饌便當.jpg" />
+    <Content Include="images\Menus\御便當.jpg" />
+    <Content Include="images\Menus\悟饕便當.jpg" />
+    <Content Include="images\Menus\明月拌飯.jpg" />
+    <Content Include="images\Menus\星食雞.jpg" />
+    <Content Include="images\Menus\李品蒸餃世家.jpg" />
+    <Content Include="images\Menus\正忠排骨飯.jpg" />
+    <Content Include="images\Menus\池上便當.jpg" />
+    <Content Include="images\Menus\泰夯.jpg" />
+    <Content Include="images\Menus\洪良記.jpg" />
+    <Content Include="images\Menus\派克雞排.JPG" />
+    <Content Include="images\Menus\炒飯達人.jpg" />
+    <Content Include="images\Menus\烤肉飯.jpg" />
+    <Content Include="images\Menus\珍多福燒臘.jpg" />
+    <Content Include="images\Menus\皇家貴族便當.jpg" />
+    <Content Include="images\Menus\益.jpg" />
+    <Content Include="images\Menus\福記.jpg" />
+    <Content Include="images\Menus\精食巧海苔飯捲.jpg" />
+    <Content Include="images\Menus\糊塗麵.jpg" />
+    <Content Include="images\Menus\老彭現炒便當.png" />
+    <Content Include="images\Menus\老林快餐.jpg" />
+    <Content Include="images\Menus\花便當.jpg" />
+    <Content Include="images\Menus\豬腳蔡爌肉飯.jpg" />
+    <Content Include="images\Menus\財神爺滷肉飯.JPG" />
+    <Content Include="images\Menus\超吉大盛.jpg" />
+    <Content Include="images\Menus\越南河粉.jpg" />
+    <Content Include="images\Menus\金湯牛肉麵.jpg" />
+    <Content Include="images\Menus\金邊牛肉河粉.jpg" />
+    <Content Include="images\Menus\陳師傅牛肉麵.jpg" />
+    <Content Include="images\Menus\韓味煮藝.jpg" />
+    <Content Include="images\Menus\香港京華燒臘美食.jpg" />
+    <Content Include="images\Menus\騰清池上便當.jpg" />
+    <Content Include="images\Menus\高雄米苔目.jpg" />
+    <Content Include="images\Menus\麵對麵.jpg" />
+    <Content Include="images\Menus\黑肉麵.jpg" />
+    <Content Include="images\Menus\龍品魚丸.jpg" />
+    <Content Include="images\error.jpg" />
+    <Content Include="LINE-master\.gitignore" />
+    <Content Include="LINE-master\build\lib\line\api.py" />
+    <Content Include="LINE-master\build\lib\line\client.py" />
+    <Content Include="LINE-master\build\lib\line\models.py" />
+    <Content Include="LINE-master\build\lib\line\__init__.py" />
+    <Content Include="LINE-master\CHANGES.txt" />
+    <Content Include="LINE-master\config.py" />
+    <Content Include="LINE-master\docs\conf.py" />
+    <Content Include="LINE-master\docs\flask_theme_support.py" />
+    <Content Include="LINE-master\docs\_build\html\api\api.html" />
+    <Content Include="LINE-master\docs\_build\html\api\client.html" />
+    <Content Include="LINE-master\docs\_build\html\api\models.html" />
+    <Content Include="LINE-master\docs\_build\html\genindex.html" />
+    <Content Include="LINE-master\docs\_build\html\index.html" />
+    <Content Include="LINE-master\docs\_build\html\issue.html" />
+    <Content Include="LINE-master\docs\_build\html\search.html" />
+    <Content Include="LINE-master\docs\_build\html\searchindex.js" />
+    <Content Include="LINE-master\docs\_build\html\tutorial.html" />
+    <Content Include="LINE-master\docs\_build\html\_sources\api\api.txt" />
+    <Content Include="LINE-master\docs\_build\html\_sources\api\client.txt" />
+    <Content Include="LINE-master\docs\_build\html\_sources\api\models.txt" />
+    <Content Include="LINE-master\docs\_build\html\_sources\index.txt" />
+    <Content Include="LINE-master\docs\_build\html\_sources\issue.txt" />
+    <Content Include="LINE-master\docs\_build\html\_sources\tutorial.txt" />
+    <Content Include="LINE-master\docs\_build\html\_static\ajax-loader.gif" />
+    <Content Include="LINE-master\docs\_build\html\_static\basic.css" />
+    <Content Include="LINE-master\docs\_build\html\_static\comment-bright.png" />
+    <Content Include="LINE-master\docs\_build\html\_static\comment-close.png" />
+    <Content Include="LINE-master\docs\_build\html\_static\comment.png" />
+    <Content Include="LINE-master\docs\_build\html\_static\doctools.js" />
+    <Content Include="LINE-master\docs\_build\html\_static\down-pressed.png" />
+    <Content Include="LINE-master\docs\_build\html\_static\down.png" />
+    <Content Include="LINE-master\docs\_build\html\_static\file.png" />
+    <Content Include="LINE-master\docs\_build\html\_static\flasky.css" />
+    <Content Include="LINE-master\docs\_build\html\_static\jquery-1.11.1.js" />
+    <Content Include="LINE-master\docs\_build\html\_static\jquery.js" />
+    <Content Include="LINE-master\docs\_build\html\_static\logo.ico" />
+    <Content Include="LINE-master\docs\_build\html\_static\logo.png" />
+    <Content Include="LINE-master\docs\_build\html\_static\logo.svg" />
+    <Content Include="LINE-master\docs\_build\html\_static\minus.png" />
+    <Content Include="LINE-master\docs\_build\html\_static\plus.png" />
+    <Content Include="LINE-master\docs\_build\html\_static\pygments.css" />
+    <Content Include="LINE-master\docs\_build\html\_static\searchtools.js" />
+    <Content Include="LINE-master\docs\_build\html\_static\underscore-1.3.1.js" />
+    <Content Include="LINE-master\docs\_build\html\_static\underscore.js" />
+    <Content Include="LINE-master\docs\_build\html\_static\up-pressed.png" />
+    <Content Include="LINE-master\docs\_build\html\_static\up.png" />
+    <Content Include="LINE-master\docs\_build\html\_static\websupport.js" />
+    <Content Include="LINE-master\docs\_static\logo.ico" />
+    <Content Include="LINE-master\docs\_static\logo.png" />
+    <Content Include="LINE-master\docs\_static\logo.svg" />
+    <Content Include="LINE-master\docs\_themes\flask\layout.html" />
+    <Content Include="LINE-master\docs\_themes\flask\relations.html" />
+    <Content Include="LINE-master\examples\echobot.py" />
+    <Content Include="LINE-master\examples\gen-py\line\AccountSupervisorService.py" />
+    <Content Include="LINE-master\examples\gen-py\line\AgeCheckService.py" />
+    <Content Include="LINE-master\examples\gen-py\line\BuddyManagementService.py" />
+    <Content Include="LINE-master\examples\gen-py\line\BuddyService.py" />
+    <Content Include="LINE-master\examples\gen-py\line\ChannelApplicationProvidedService.py" />
+    <Content Include="LINE-master\examples\gen-py\line\ChannelService.py" />
+    <Content Include="LINE-master\examples\gen-py\line\constants.py" />
+    <Content Include="LINE-master\examples\gen-py\line\MessageService.py" />
+    <Content Include="LINE-master\examples\gen-py\line\ShopService.py" />
+    <Content Include="LINE-master\examples\gen-py\line\SnsAdaptorService.py" />
+    <Content Include="LINE-master\examples\gen-py\line\TalkService.py" />
+    <Content Include="LINE-master\examples\gen-py\line\ttypes.py" />
+    <Content Include="LINE-master\examples\gen-py\line\UniversalNotificationService.py" />
+    <Content Include="LINE-master\examples\gen-py\line\__init__.py" />
+    <Content Include="LINE-master\examples\gen-py\__init__.py" />
+    <Content Include="LINE-master\line.egg-info\dependency_links.txt" />
+    <Content Include="LINE-master\line.egg-info\requires.txt" />
+    <Content Include="LINE-master\line.egg-info\SOURCES.txt" />
+    <Content Include="LINE-master\line.egg-info\top_level.txt" />
+    <Content Include="LINE-master\line\api.py" />
+    <Content Include="LINE-master\line\client.py" />
+    <Content Include="LINE-master\line\models.py" />
+    <Content Include="LINE-master\line\__init__.py" />
+    <Content Include="LINE-master\setup.py" />
+    <Content Include="LINE-master\thrift\readme.txt" />
+    <Content Include="LINE-master\thrift\thrift.exe" />
+    <Content Include="readme.txt" />
+    <Content Include="Scripts\Chart.js" />
+    <Content Include="Scripts\game.js" />
+    <Content Include="Scripts\heatmap.js" />
+    <Content Include="Scripts\jquery.toast.js" />
+    <Content Include="Scripts\LineClient.py" />
+    <Content Include="Scripts\bootcards.min.js" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="fonts\icomoon.eot" />
+    <Content Include="fonts\icomoon.ttf" />
+    <Content Include="fonts\icomoon.woff" />
+    <Content Include="fonts\fontawesome-webfont.woff" />
+    <Content Include="fonts\fontawesome-webfont.ttf" />
+    <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="fonts\FontAwesome.otf" />
+    <Content Include="packages.config" />
+    <Content Include="LINE-master\.line.crt" />
+    <Content Include="LINE-master\AUTHORS.rst" />
+    <Content Include="LINE-master\dist\line-0.7.0-py2.7.egg" />
+    <Content Include="LINE-master\docs\api\api.rst" />
+    <Content Include="LINE-master\docs\api\client.rst" />
+    <Content Include="LINE-master\docs\api\models.rst" />
+    <Content Include="LINE-master\docs\index.rst" />
+    <Content Include="LINE-master\docs\issue.rst" />
+    <Content Include="LINE-master\docs\make.bat" />
+    <Content Include="LINE-master\docs\Makefile" />
+    <Content Include="LINE-master\docs\tutorial.rst" />
+    <Content Include="LINE-master\docs\_build\doctrees\api\api.doctree" />
+    <Content Include="LINE-master\docs\_build\doctrees\api\client.doctree" />
+    <Content Include="LINE-master\docs\_build\doctrees\api\models.doctree" />
+    <Content Include="LINE-master\docs\_build\doctrees\environment.pickle" />
+    <Content Include="LINE-master\docs\_build\doctrees\index.doctree" />
+    <Content Include="LINE-master\docs\_build\doctrees\issue.doctree" />
+    <Content Include="LINE-master\docs\_build\doctrees\tutorial.doctree" />
+    <Content Include="LINE-master\docs\_build\html\.buildinfo" />
+    <Content Include="LINE-master\docs\_build\html\objects.inv" />
+    <Content Include="LINE-master\docs\_themes\flask\static\flasky.css_t" />
+    <Content Include="LINE-master\docs\_themes\flask\theme.conf" />
+    <Content Include="LINE-master\examples\.line.crt" />
+    <Content Include="LINE-master\examples\gen-py\line\AccountSupervisorService-remote" />
+    <Content Include="LINE-master\examples\gen-py\line\AgeCheckService-remote" />
+    <Content Include="LINE-master\examples\gen-py\line\BuddyManagementService-remote" />
+    <Content Include="LINE-master\examples\gen-py\line\BuddyService-remote" />
+    <Content Include="LINE-master\examples\gen-py\line\ChannelApplicationProvidedService-remote" />
+    <Content Include="LINE-master\examples\gen-py\line\ChannelService-remote" />
+    <Content Include="LINE-master\examples\gen-py\line\MessageService-remote" />
+    <Content Include="LINE-master\examples\gen-py\line\ShopService-remote" />
+    <Content Include="LINE-master\examples\gen-py\line\SnsAdaptorService-remote" />
+    <Content Include="LINE-master\examples\gen-py\line\TalkService-remote" />
+    <Content Include="LINE-master\examples\gen-py\line\UniversalNotificationService-remote" />
+    <Content Include="LINE-master\LICENSE" />
+    <Content Include="LINE-master\line.egg-info\PKG-INFO" />
+    <Content Include="LINE-master\line\api.pyc" />
+    <Content Include="LINE-master\line\client.pyc" />
+    <Content Include="LINE-master\line\models.pyc" />
+    <Content Include="LINE-master\line\__init__.pyc" />
+    <Content Include="LINE-master\Makefile" />
+    <Content Include="LINE-master\MANIFEST.in" />
+    <Content Include="LINE-master\README.md" />
+    <Content Include="LINE-master\README.rst" />
+    <Content Include="LINE-master\thrift\line.thrift" />
+    <Content Include="ClassDiagram1.cd" />
+    <Content Include="config\globalsetting.config" />
+    <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\jquery-1.10.2.js" />
+    <Content Include="Scripts\jquery-1.10.2.min.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\magicsuggest-min.js" />
+    <Content Include="Scripts\masonry.pkgd.min.js" />
+    <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\pixi.min.js" />
+    <Content Include="Scripts\soundjs-0.6.2.min.js" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="client_page\client_chooseOrderPage.aspx.cs">
+      <DependentUpon>client_chooseOrderPage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="client_page\client_chooseOrderPage.aspx.designer.cs">
+      <DependentUpon>client_chooseOrderPage.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\AdminBaseController.cs" />
+    <Compile Include="Controllers\ApiController.cs" />
+    <Compile Include="Controllers\AppController.cs" />
+    <Compile Include="Controllers\ResetPasswordController.cs" />
+    <Compile Include="Controllers\SlackApiController.cs" />
+    <Compile Include="Controllers\SlackController.cs" />
+    <Compile Include="Controllers\TransferController.cs" />
+    <Compile Include="Controllers\BalanceController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\BootstrapTestController.cs" />
+    <Compile Include="Controllers\ClientOrderController.cs" />
+    <Compile Include="Controllers\DelegatorBaseController.cs" />
+    <Compile Include="Controllers\EditOrderController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\GamesController.cs" />
+    <Compile Include="Controllers\IndividualCostController.cs" />
+    <Compile Include="Controllers\InsertRestaurantController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\LogOutController.cs" />
+    <Compile Include="Controllers\MemberController.cs" />
+    <Compile Include="Controllers\RandomRestaurantController.cs" />
+    <Compile Include="Controllers\RecommendationController.cs" />
+    <Compile Include="Controllers\RegisterController.cs" />
+    <Compile Include="Controllers\RestaurantController.cs" />
+    <Compile Include="Controllers\SettleBaseController.cs" />
+    <Compile Include="Controllers\ShowOrderDetailController.cs" />
+    <Compile Include="Controllers\TopUpController.cs" />
+    <Compile Include="Controllers\TotalCostController.cs" />
+    <Compile Include="Controllers\UpdateRestaurantController.cs" />
+    <Compile Include="Controllers\UserBaseController.cs" />
+    <Compile Include="Controllers\_PartialNotOrderController.cs" />
+    <Compile Include="Dapper\SqlMapper.cs" />
+    <Compile Include="Entity\AllowCrossSiteJsonAttribute.cs" />
+    <Compile Include="Entity\ClientOrder\OrderForm.cs" />
+    <Compile Include="Entity\Customer.cs" />
+    <Compile Include="Entity\Game\Person.cs" />
+    <Compile Include="Entity\Game\Record.cs" />
+    <Compile Include="Entity\OrderInfo.cs" />
+    <Compile Include="Entity\IndCost.cs" />
+    <Compile Include="Entity\JsonResponse.cs" />
+    <Compile Include="Entity\LineClient.cs" />
+    <Compile Include="Entity\LoginResponse.cs" />
+    <Compile Include="Entity\Order.cs" />
+    <Compile Include="Entity\Recommend.cs" />
+    <Compile Include="Entity\Restaurant.cs" />
+    <Compile Include="Entity\Summary.cs" />
+    <Compile Include="Entity\TopUp.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Helper\ConfigHelper.cs" />
+    <Compile Include="Helper\LogHelper.cs" />
+    <Compile Include="Models\ClientOrderModelView.cs" />
+    <Compile Include="Models\EnumTransferStatus.cs" />
+    <Compile Include="Models\SlackChannel.cs" />
+    <Compile Include="Models\TransferViewModel.cs" />
+    <Compile Include="Models\HistoryModel.cs" />
+    <Compile Include="Models\TransCust.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\LunchRepository.cs" />
+    <Compile Include="Service\EncryptProcessor.cs" />
+    <Compile Include="Service\SlackPayload.cs" />
+    <Compile Include="Service\INotificationService.cs" />
+    <Compile Include="Service\IAlertBody.cs" />
+    <Compile Include="Service\SlackClient.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\web.config" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Scripts\jquery-1.10.2.min.map" />
+    <Content Include="Views\Restaurant\Index.cshtml" />
+    <Content Include="Views\Restaurant\Update.cshtml" />
+    <Content Include="Views\Restaurant\Push.cshtml" />
+    <Content Include="Views\ClientOrder\Index.cshtml" />
+    <Content Include="Views\Register\Index.cshtml" />
+    <Content Include="Views\Login\Index.cshtml" />
+    <Content Include="Views\TotalCost\Index.cshtml" />
+    <Content Include="Views\_PartialNotOrder\Index.cshtml" />
+    <Content Include="Views\EditOrder\Index.cshtml" />
+    <Content Include="Views\Error\Index.cshtml" />
+    <Content Include="Views\IndividualCost\Index.cshtml" />
+    <Content Include="Views\TopUp\Index.cshtml" />
+    <Content Include="Views\Balance\Index.cshtml" />
+    <Content Include="Views\BootstrapTest\Index.cshtml" />
+    <Content Include="Views\UpdateRestaurant\Index.cshtml" />
+    <Content Include="Views\InsertRestaurant\Index.cshtml" />
+    <Content Include="Views\Member\Index.cshtml" />
+    <Content Include="Views\Shared\_AdminLayout.cshtml" />
+    <Content Include="Views\ShowOrderDetail\Index.cshtml" />
+    <Content Include="Views\RandomRestaurant\Index.cshtml" />
+    <Content Include="Views\Games\_MiniGame.cshtml" />
+    <Content Include="Views\Games\Index.cshtml" />
+    <Content Include="Views\Recommendation\Index.cshtml" />
+    <Content Include="Views\Transfer\Index.cshtml" />
+    <Content Include="Views\Transfer\PartialTransferList.cshtml" />
+    <Content Include="Views\Slack\Index.cshtml" />
+    <Content Include="Views\ResetPassword\Index.cshtml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="LINE-master\build\bdist.win-amd64\" />
+    <Folder Include="Views\AdminBase\" />
+    <Folder Include="Views\Api\" />
+    <Folder Include="Views\App\" />
+    <Folder Include="Views\DelegatorBase\" />
+    <Folder Include="Views\LogOut\" />
+    <Folder Include="Views\SettleBase\" />
+    <Folder Include="Views\Summary\" />
+    <Folder Include="Views\UserBase\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v15.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>57285</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:57285/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,44 @@
+﻿@model Lunch.Entity.Restaurant
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<script>
+    function renew() {
+        $.ajax({
+            type: "POST",
+            data: { "data": 1 },
+            
+
+        })
+    }
+    
+</script>
+
+
+<button type="button" data-toggle="modal" data-target="#randomwin" >隨機</button>
+
+
+
+
+<div id="randomwin" class="modal fade" role="dialog" >
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">@Model.Name</h1>
+            </div>
+            <div class="modal-body">                
+                <p>@Model.Name</p>
+                <img src="@Model.MenuUrl"/>
+                <br />
+                <button>餐廳</button>
+            </div>
+            <div class="modal-footer">
+                <p>foo</p>
+            </div>
+
+        </div>
+    </div>
+</div>

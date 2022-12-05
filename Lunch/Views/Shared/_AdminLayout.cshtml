@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Ceres</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    <link href="/Content/magicsuggest-min.css" rel="stylesheet">
+    <link href="/Content/jquery.toast.css" rel="stylesheet">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="/Scripts/magicsuggest-min.js"></script>
+    <script src="/Scripts/jquery.toast.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/jquery.validate.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/additional-methods.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <style>
+        .navbar-inverse {
+            background-color: #239c4b !important;
+        }
+
+            .navbar-inverse .navbar-brand { /*#9d9d9d*/
+                color: #dedede !important;
+            }
+
+            .navbar-inverse .navbar-nav > li > a {
+                color: #dedede !important;
+            }
+    </style>
+</head>
+
+<body>
+    <!--heatmap -->
+    <div id="showMap" style="position:absolute;z-index:100;"></div>
+    <div id="showMenu" style="position:fixed;z-index:10000;"></div>
+    <div id="heatmapMenu">
+        <!--heatmap -->
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    @Html.ActionLink("Restaurant", "Index", "Restaurant", new { area = "" }, new { @class = "navbar-brand" })
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a class="navbar-brand" href="@Url.Action("Index","ClientOrder")">Order</a></li>
+                        <li><a class="navbar-brand" href="@Url.Action("Index","TotalCost")">Total</a></li>
+                        <li><a class="navbar-brand" href="@Url.Action("Index","EditOrder")">Edit</a></li>
+                        <li><a class="navbar-brand" href="@Url.Action("Index","TopUp")">TopUp</a></li>
+                        <li><a class="navbar-brand" href="@Url.Action("Index","Balance")">History</a></li>
+                        <li><a class="navbar-brand" href="@Url.Action("Index","InsertRestaurant")">InsertRestaurant</a></li>
+                        <li><a class="navbar-brand" href="@Url.Action("Index", "Member","")">Member</a></li>
+                        <li><a class="navbar-brand" href="@Url.Action("Index","Transfer")">Transfer</a></li>
+                        <li><a class="navbar-brand" href="@Url.Action("Index","ResetPassword")">ResetPassword</a></li>
+                        @*<li><a class="navbar-brand" href="@Url.Action("Index","Slack")">Slack</a></li>*@
+                        @*<li><a class="navbar-brand" href="@Url.Action("Index","Recommendation")">Recommendation</a></li>*@
+                    </ul>
+                    <div class="navbar-right">
+                        <a class="navbar-brand" href="@Url.Action("Index","LogOut")">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="heatmapContainer">
+        <div class="container body-content">
+            @RenderBody()
+            <hr />
+            <footer>
+                @*<p>&copy; @DateTime.Now.Year - Ceres</p>*@
+            </footer>
+        </div>
+        @RenderSection("scripts", required: false)
+    </div>
+    <!--heatmap -->
+    <script src="../Scripts/heatmap.js"></script>
+    <script src="../Scripts/Chart.js"></script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+﻿@model Lunch.Entity.Restaurant
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+@{
+    ViewBag.Title = "修改餐廳";
+}
+
+<h2>Index</h2>
+<script>
+    $(document).ready(function(){
+        $("#updatesubmit").click(function () {
+            var name =$("#updateform").children("input[name='name']").val();
+            var tel = $("#updateform").children("input[name='tel']").val();
+            if (name === '' || tel === '') {
+                alert("'Name' and 'Tel' can't be empty")
+            }
+            else {
+                $("#updateform").submit();
+            }
+        })
+
+        $("#@ViewBag.category").attr("selected","selected")
+    })
+
+</script>
+
+<form action=@Url.Action("Index") method="post" enctype="multipart/form-data" id="updateform">
+    <input type="hidden" name="rid" value="@Model.RestaurantId" />
+    <input type="hidden" name="url" value="@Model.MenuUrl" />
+    <table>
+        <tr>
+            <td>Restaurant Name:</td>
+            <td> <input type="text" name="name" value="@Model.Name" /></td>
+        </tr>
+        <tr><td>&nbsp;</td></tr>
+        <tr>
+            <td>Tel:</td>
+            <td><input type="text" name="tel" value="@Model.Telephone" /></td>
+        </tr>
+        <tr><td>&nbsp;</td></tr>
+        <tr>
+            <td>Category:</td>
+            <td>
+                <select id="category" name="category">
+                    <option id="category1" value="1">便當</option>
+                    <option id="category2" value="2">點心</option>
+                    <option id="category3" value="3">飲料</option>
+                    <option id="category4" value="4">麵類</option>
+                    <option id="category5" value="5">飯類</option>
+                    <option id="category6" value="6">早午餐</option>
+                </select>
+            </td>
+        </tr>
+        <tr><td>&nbsp;</td></tr>
+        <tr>
+            <td>Comment:</td>
+            <td><textarea name="comment" rows="5" cols="21" value="@Model.Comment">@Model.Comment</textarea></td>
+        </tr>
+    </table>
+    Upload image here:
+    <input type="file" name="img" />
+    <br />
+    <input type="button" class="btn btn-primary btn-lg" id="updatesubmit" value="確認" />
+</form>

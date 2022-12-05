@@ -1,0 +1,165 @@
+﻿@{
+    if (ViewBag.Admin == "True")
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml"; 
+    }
+}
+
+@{
+    ViewBag.Title = "Balance";
+}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+@*<link rel="stylesheet" href="/resources/demos/style.css">*@
+<style>
+    tr > td{
+        padding-left:8px !important;
+    }
+</style>
+
+<h2 align="center">Account History</h2>
+<div>
+    <input type="button" class="btn btn-default btn-md pull-right" onclick="GoBack()" value="Back"/>
+    <input type="button" class="btn btn-default btn-md pull-right" onclick="Today()" value="Today" />
+</div>
+@*<style>
+table,td,th{ 
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+    text-align: left;    
+}
+</style>*@
+@*<style type="text/css">
+    tr:nth-child(odd){
+        background-color:#f3f3f3
+    }
+    tr:nth-child(even){
+         background-color:#ddd
+    }
+</style>*@
+<script>
+        
+        function GoBack() {
+            window.location.href = "/Restaurant/Index"
+        }
+        function Today() {
+            window.location.href = "/Balance/Index"
+        }
+        function Check() {
+            var d1 = document.forms['history'].elements['date1'].value;
+            var d2 = document.forms["history"].elements["date2"].value;
+            if (d1 == "" || d1 == null) {
+                alert("You haven't picked the starting date!");
+                return false;
+            }
+            if (d2 == "" || d2 == null) {
+                alert("You haven't picked the ending date!");
+                return false;
+            }
+            var target=document.forms['history'].elements['target'].value;
+        }
+        
+</script>
+<script>
+    $(function () {
+        $.datepicker.setDefaults({
+            dateFormat: 'yy-mm-dd'
+        });
+            $("#date1").datepicker();
+            $("#date2").datepicker();
+    });
+</script>
+<body>
+    <form id="history" name="history" action="@Url.Action("Index","Balance")" method="post" role="form" style="display: block;">
+        <div class="form-group">
+            <h3>Start Date：</h3>
+            <input type="text" name="date1" id="date1" tabindex="1" class="form-control" placeholder="date1" value=@ViewBag.date1>
+        </div>
+        <div class="form-group">
+            <h3>End Date：</h3>
+            <input type="text" name="date2" id="date2" tabindex="2" class="form-control" placeholder="date2" value=@ViewBag.date2>
+        </div>
+        @if (ViewBag.Admin == "True") {
+        <div class="form-group">
+            <h3>Member：</h3>
+            <select class="form-control" id="target" name="target" onchange="selectname( this.value)">
+                <option value=-1 >All Member</option>
+                @foreach (var customername in @Model.customer)
+                {
+                    if (customername.CustomerId == ViewBag.target)
+                    {
+                        <option id="@customername.Name" name=@customername.CustomerId value=@customername.CustomerId selected="selected">@customername.Name</option>
+                    }
+                    else 
+                    {
+                    <option id="@customername.Name" name=@customername.CustomerId value=@customername.CustomerId>@customername.Name</option>
+                    }
+                }
+            </select>
+        </div>
+        }
+        <div class="form-group">
+            <div class="col-sm-6 col-sm-offset-3">
+                <input type="submit" name="date-submit" id="date-submit" tabindex="3" class="form-control btn btn-login btn-primary" value="Search" onclick="return Check()">@*Submit*@
+            </div>
+        </div>
+        <br><br><br /><br />
+    </form>
+
+        <div>
+            
+            <div>
+                <h4 align="center">@ViewBag.date</h4>
+                @*<input type="text" />
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>*@
+            </div>
+            <table class="table table-striped table-bordered table-hover" style="width:50%" align="center">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Detail</th>
+                        <th>In/Out</th>
+                        <th>Balance</th>
+                    </tr>
+                </thead>
+                <tbody data-toggle="table" id="IndBalance">
+                    @{var BuffName = ""; int BuffNum = 0;}
+                    @if (Model != null)
+                    {
+                        foreach (var a in @Model.balance)
+                        {
+                            if (a.Name == BuffName)
+                            {
+                                <tr>
+                                    <td>@a.Time.ToString("yyyy-MM-dd")</td>
+                                    <td>@a.Meal</td>
+                                    <td>@a.Cost</td>
+                                    <td>@a.Balance</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td rowspan="@a.NameNum">@a.Name</td>
+                                    <td>@a.Time.ToString("yyyy-MM-dd")</td>
+                                    <td>@a.Meal</td>
+                                    <td>@a.Cost</td>
+                                    <td>@a.Balance</td>
+                                </tr>
+                                BuffName = @a.Name;
+                                BuffNum = @a.NameNum;
+                            }
+                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+</body>
+
+

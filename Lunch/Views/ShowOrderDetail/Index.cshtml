@@ -1,0 +1,59 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+
+
+
+<div class="row">
+    <div class="col-lg-4">
+        <img src="@ViewBag.pushresurl" width="400" height="600" />
+    </div>
+    <div class="col-lg-4">
+        <h2>個人點餐資訊</h2>
+        @*<h2>@ViewBag.OTime</h2>*@                                                                  <!--第三段div-->
+        <table border="1" style="width:100%">
+            <!--新版table--><!--顯示統計的table-->
+            <thead>
+                <!--thead為標題，要與tbody一起用-->
+                <tr>
+                    <th>Name</th>
+                    <th>Meal</th>
+                    <th>價錢</th>
+                    <th>總計</th>
+                </tr>
+            </thead>
+            <tbody data-toggle="table" id="OrderInfoTable">
+                <!--表格內容-->
+                @{string nameBuffer = ""; var index = 0; int TotalCost = 0;}
+
+                @foreach (var orderinfo in Model.detail)
+                {
+                    if (orderinfo.Name == nameBuffer)
+                    {
+                        <tr class="TotalElement+@index">
+                            <td>@orderinfo.Meal</td>
+                            <td>@orderinfo.Cost </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr class="TotalElement+@index">
+                            <td rowspan="@orderinfo.NameNum">@orderinfo.Name</td>
+                            <td>@orderinfo.Meal</td>
+                            <td>@orderinfo.Cost</td>
+                            <td rowspan="@orderinfo.NameNum">@orderinfo.IndSum</td>
+                        </tr>
+                        nameBuffer = @orderinfo.Name;
+
+                        index += 1;
+                        TotalCost += @orderinfo.IndSum;
+
+                    }
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>

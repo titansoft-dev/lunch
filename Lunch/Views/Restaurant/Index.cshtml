@@ -1,0 +1,293 @@
+﻿@{
+    ViewBag.Title = "title";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<style>
+    .pushed {
+        background-color: aquamarine !important;
+    }
+
+    .mg-image img {
+        -webkit-transform: scale(1.25); /* Safari and Chrome */
+        -moz-transform: scale(1.25); /* Firefox */
+        -ms-transform: scale(1.25); /* IE 9 */
+        -o-transform: scale(1.25); /* Opera */
+        transform: scale(1.25);
+    }
+</style>
+
+<script>
+
+
+    function changeIsPushed(element)
+    {
+        var restaurantId = $(element).closest("form").find("input[name=restaurantId]").val();
+        var isPush = $(element).attr("ispushed");
+        if (isPush === "1") {
+            if(confirm("Want to cancel push?") === true){
+                var form = $(element).closest("form");
+                form.attr('action', '/Restaurant/UnPush');
+                form.submit();
+            }
+        } else {
+            var notSettledResId;
+            for(var i = 0;i<=@Model.notSettledRestaurant.Count;i++){
+                notSettledResId = $("#notSettledResId"+i).val();
+                if( restaurantId == notSettledResId){
+                    if(confirm("You haven't Settle/Delete the past Restaurant's information. If you push now, it may cause some error. \r\n Do you still want to push it?") ==true){
+                        $(element).closest("form").submit();
+                        return;
+                    }
+                    else{
+                        return;
+                    }
+
+                }
+            }
+
+            if(confirm("Want to push it?") === true){
+                $(element).closest("form").submit();
+            }
+            else{
+                return;
+            }
+        }
+    }
+
+    function UpdateRestaurant(element) {
+        $(element).closest("form").attr({ "action": "@Url.Action("Index","UpdateRestaurant")", "method": "get" }).submit();
+
+    }
+    function DeleteRestaurant(element) {
+        if (confirm("Do you really want to delete it?") == true) {
+            $(element).closest("form").attr("action", "@Url.Action("DeleteRestaurant","Restaurant")").submit(); //刪除restaurant
+        } else {
+            return;
+        }
+    }
+
+    var resForm = $("#0");
+    function ChangeCategory(category){
+
+        var categoryId;
+        switch (category){
+            case "便當":
+                categoryId = 1;
+                break;
+            case "點心":
+                categoryId = 2;
+                break;
+            case "飲料":
+                categoryId = 3;
+                break;
+            case "麵類":
+                categoryId = 4;
+                break;
+            case "飯類":
+                categoryId = 5;
+                break;
+            case "早午餐":
+                categoryId = 6;
+                break;
+        }
+        $("#categorySelectedId").val(categoryId);
+        $("#categoryForm").submit();
+        @*$.ajax({
+            url:"@Url.Action("Index","Restaurant")",
+            type:"GET",
+            data:{"categoryId":categoryId},
+            success: function(data){
+                var restaurants = JSON.parse(data);
+
+
+            }
+        })*@
+    }
+
+
+
+    function ToggleZoom(element) {
+        var parent = $(element).parent();
+        if (parent.hasClass("mg-image")) {
+            parent.removeClass("mg-image");
+        } else {
+            parent.addClass("mg-image");
+        }
+    }
+
+    function GoToTotalPage() {
+        window.location.href = "/TotalCost/Index"
+    }
+    function GoToOderPage() {
+        window.location.href = "/ClientOrder/Index"
+    }
+    function GotoTopUp() {
+        window.location.href = "/TopUp/Index"
+    }
+    function GotoBalance() {
+        window.location.href = "/Balance/Index"
+    }
+    function RandomChooseRes() {//新增一個random頁面
+        window.open("@Url.Action("Index", "RandomRestaurant")", "", config = "height=900,width=500,location=no,left=550,top=50");
+    }
+    function InsertNewRes() {
+        window.location.href="/InsertRestaurant/Index"
+    }
+    function MemberManage() {
+        window.location.href = "/Member/Index"
+    }
+    function CheckNewMember() {
+        if (confirm("有待審核成員!是否前往更改權限?") == true) {
+            window.location.href = "/Member/Index"
+        }
+        else {
+            return;
+        }
+    }
+
+    function LunchComing(){
+        $.ajax({
+            url: ' @Url.Action("LunchComing", "Restaurant")',
+            type: 'POST',
+            success: function(result) {
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        if (@ViewBag.restaurantId!= null) {
+            var Top = $('#@ViewBag.restaurantId').offset().top - 50;
+            $('html,body').scrollTop(Top);
+        }
+        $('#myModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var url = button.data('image'); // Extract info from data-* attributes
+            var restaurant = button.data('restaurant');
+            var telephone = button.data('telephone');
+            var comment = button.data('comment');
+            var modal = $(this);
+            modal.find('img').attr('src', url);
+            modal.find('.modal-title').html(restaurant + '&nbsp;&nbsp;&nbsp;&nbsp;Tel:' + telephone);
+            modal.find('#modal-comment').html(comment);
+        });
+        if(@ViewBag.NewMember!=-1){
+            CheckNewMember();
+        }
+
+        var category = "category";
+        category = category.concat("@Model.CategoryId");
+        $("#"+category).attr("selected","selected");
+        //若有同一間餐廳之前尚未Settled的Order，則不能push
+        @*if("@ViewBag.hadSettled" != ""){
+            if("@ViewBag.hadSettled" == "False"){
+                alert("This restaurant still has order not settled. You need to settle/delete the order information first")
+            }
+        }*@
+
+    });
+</script>
+
+
+@{int index = 0; string idIndex = "notSettledResId0";}
+@foreach (var notSettledRes in Model.notSettledRestaurant)
+{
+    <input type="hidden" id="@idIndex" value="@notSettledRes.RestaurantId" />
+    idIndex = idIndex.Replace(Convert.ToString(index), Convert.ToString(index + 1));
+    index += 1;
+}
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="col-lg-2">
+            @Html.Action("Index", "_PartialNotOrder", new { ViewBag.restaurantId }) @*將別的view的資料加入此頁*@
+        </div>
+
+        <div class="col-lg-10">
+            <form action="@Url.Action("Index","Restaurant")" method="get" id="categoryForm">
+                <input type="hidden" name="categorySelectedId" id="categorySelectedId" />
+                <table width="250">
+                    <tr>
+                        <td>
+                            <input type="button" class="btn btn-primary btn-md" onclick="RandomChooseRes()" value="隨機" />
+                        </td>
+                        <td>
+                            <input type="button" class="btn btn-warning btn-md" onclick="LunchComing()" value="午餐來了!" />
+                        </td>
+                        <td>
+                            <select onchange="ChangeCategory(this.value)">
+                                <option id="category1">便當</option>
+                                <option id="category2">點心</option>
+                                <option id="category3">飲料</option>
+                                <option id="category4">麵類</option>
+                                <option id="category5">飯類</option>
+                                <option id="category6">早午餐</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+
+            <div class="row" style="margin-top:30px" id="restaurantList">
+                @{int i = 0;}
+                @if (Model.restaurant.Count != 0)
+                {
+                    foreach (var rest in @Model.restaurant)
+                    {
+                        var restId = rest.RestaurantId;
+                        <form action="/Restaurant/Push" id="@i" method="post">
+                            <input type="hidden" name="restaurantId" value="@rest.RestaurantId">
+                            <input type="hidden" name="menuUrl" value="@rest.MenuUrl" />
+                            <div class="col-lg-3">
+                                <a id="@restId"></a>
+                                <div class="panel panel-default bootcards-media">
+                                    <div class="panel-heading @(rest.IsPushed ? "pushed" : "") " name>
+                                        <span class="panel-title" name="restaurantName">@rest.Name</span>
+                                        <span class="btn btn-primary btn-xs" style="float: right;" onclick="changeIsPushed(this)" ispushed="@(rest.IsPushed ? "1" : "0")">@(rest.IsPushed ? "Cancel" : "push")</span>
+                                    </div>
+                                    <div class="panel-body">
+                                        <span name="restaurantTel">Telephone: @rest.Telephone</span>
+                                        @if (rest.IsPushed)
+                                        {
+                                            <span class="label label-success" name="PushedRes" style="float: right;">Pushed</span>
+                                        }
+                                    </div>
+
+                                    <img src="@rest.MenuUrl" class="img-responsive mg-image" style="cursor: pointer;" data-toggle="modal" data-target="#myModal" data-image="@rest.MenuUrl" data-restaurant="@rest.Name" data-telephone="@rest.Telephone" data-comment="@rest.Comment" height="500" />
+
+                                    <div class="panel-footer">
+                                        <button type="button" class="btn btn-primary btn-xs" onclick="UpdateRestaurant(this)">修改</button> <!--js的function換頁-->
+                                        @if (rest.RestaurantId != 54)
+                                        {
+                                            <button type="button" class="btn btn-primary btn-xs" onclick="DeleteRestaurant(this)">刪除</button>
+                                        }
+                                        <br />
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        i += 1;
+                    }
+                }
+
+            </div>
+            <div id="myModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Title</h4>
+                        </div>
+                        <div class="modal-body">
+                            <img class="img-responsive" style="cursor: pointer;" src="" onclick="ToggleZoom(this);" />
+                            <h5 id="modal-comment">Hi</h5>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

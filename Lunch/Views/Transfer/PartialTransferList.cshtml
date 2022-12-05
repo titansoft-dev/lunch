@@ -1,0 +1,141 @@
+﻿@using System.Web.UI.WebControls
+@model Lunch.Models.TransferViewModel
+
+<table id="requestTo" class="table table-striped table-bordered table-hover" style="width: 80%" align="center">
+    <thead>
+        <tr>
+            <th style="width: 15%;">Request To</th>
+            <th style="width: 15%;">Request Date</th>
+            <th style="width: 40%;">Memo</th>
+            <th style="width: 10%;">Cost</th>
+            <th style="width: 20%;">action</th>
+        </tr>
+    </thead>
+    <tbody data-toggle="table" id="IndBalance">
+        @if (Model != null)
+        {
+            if (!@Model.RequestToList.Any())
+            {
+                <tr>
+                    <td colspan="5">No Pending Request</td>
+                </tr>
+            }
+            foreach (var item in @Model.RequestToList)
+            {
+                <tr>
+                    <td>@item.RestaurantName</td>
+                    <td>@item.Time.ToString("yyyy-MM-dd")</td>
+                    <td>@item.Meal</td>
+                    <td>@item.Cost</td>
+                    <td><input type="button" value="cancel" onclick="CancelTransReq(@(item.OrderId))" /></td>
+                </tr>
+            }
+        }
+
+    </tbody>
+</table>
+<br />
+
+
+<table id="requestFrom" class="table table-striped table-bordered table-hover" style="width: 80%" align="center">
+    <thead>
+        <tr>
+            <th style="width: 15%;">Request From</th>
+            <th style="width: 15%;">Request Date</th>
+            <th style="width: 40%;">Memo</th>
+            <th style="width: 10%;">Cost</th>
+            <th style="width: 20%;">action</th>
+        </tr>
+    </thead>
+    <tbody data-toggle="table" id="IndBalance">
+        @if (Model != null)
+        {
+            if (!@Model.requestFromList.Any())
+            {
+                <tr>
+                    <td colspan="5">No Pending Request</td>
+                </tr>
+            }
+            foreach (var item in @Model.requestFromList)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Time.ToString("yyyy-MM-dd")</td>
+                    <td>@item.Meal</td>
+                    <td>@item.Cost</td>
+                    <td>
+                        <input type="button" value="Approve" onclick="SettleReq(@(item.OrderId), 'approve',@(item.Cost))" />
+                        <input type="button" value="Reject" onclick="SettleReq(@(item.OrderId),'reject',@(item.Cost))" />
+                    </td>
+                </tr>
+            }
+        }
+
+    </tbody>
+</table>
+
+
+<script type="text/javascript">
+
+    function CancelTransReq(orderId) {
+        var reqForm = jQuery('<form>', {
+            'action': '/Transfer/TransferCancel',
+            'method': 'post'
+        }).append(jQuery('<input>', {
+            'name': 'orderId',
+            'value': orderId,
+            'type': 'hidden'
+        }));
+        $(document.body).append(reqForm);
+        if(confirm("Are you sure to cancel?")){
+            reqForm.submit();
+        }
+    }
+
+    function SettleReq(orderId, status,cost) {
+        $("input[name='orderId']").val(orderId);
+        $("input[name='status']").val(status);
+
+        if (status === "reject") {
+            if(confirm("Are you sure to reject it?")){
+                $.ajax({
+                    type: "POST",
+                    url: "/Transfer/TransferConfirm",
+                    data: {
+                        orderId: orderId,
+                        status: status,
+                        pw: $("#pwcheck").val()
+                    }, success: function (res) {
+                        window.location.href = "/Transfer"
+                    }
+                });
+            }
+        } else {
+            if (@ViewBag.balance >= cost) {
+                $('#fSubmit').click(function () {
+                    $("input[name='pw']").val($("#pwcheck").val());
+                    $.ajax({
+                        type: "POST",
+                        url: "/Transfer/TransferConfirm",
+                        data: {
+                            orderId: orderId,
+                            status: status,
+                            pw: $("#pwcheck").val()
+                        }, success: function (res) {
+                                window.location.href = "/Transfer"
+                        }
+                    });
+                    //$('#peddingSubmit').submit();
+                });
+                $("#dialog").dialog({
+                    height: 250,
+                    width: 300,
+                    modal: true
+                });
+            } else {
+                alert("你轉出的錢已超過你的餘額，請先到OD儲值!");
+            }
+        }
+    }
+
+</script>

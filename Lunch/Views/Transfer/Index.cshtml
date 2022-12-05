@@ -1,0 +1,149 @@
+﻿@model Lunch.Models.TransferViewModel
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+    var msgList;
+    $(function () {
+        var balance = parseInt($("#cost").attr("balance"));
+        var validator = $("#transferForm").validate({
+            ignore: [],
+            rules: {
+                usernamelist: { required: true },
+                cost: { required: true, number: true, min: 1 }
+            },
+            submitHandler: function (form) {
+                if (beforeSubmit()) {
+                    $('#submit').attr('disabled', 'disabled');
+                    form.submit();
+                }
+            }
+        });
+
+        var ms = $('#magicsuggest').magicSuggest({
+            placeholder: 'type user name here',
+            allowFreeEntries: false,
+            data: '/Api/GetCustomerInfo',
+            expandOnFocus: true,
+            maxSelection:100
+        });
+
+        $(ms).on('selectionchange', function () {
+            var content = this.getSelection();
+            content.length === 0 ? $("#usernamelist").val("") : $("#usernamelist").val(JSON.stringify(content));
+        });
+
+        if ($("#InfoMsg").html() !== "") {
+            msgList = jQuery.parseJSON($("#InfoMsg").html());
+            $.each(msgList, function (index) {
+                console.log(msgList[index]);
+                var iconName = getIconShowName(msgList[index].error);
+                var msg = msgList[index].msg;
+                $.toast({
+                    heading: iconName,
+                    text: msg,
+                    icon: iconName,
+                    hideAfter: 10000
+                });
+            });
+        }
+
+        $('#bSubmit').click(function () {            
+            if ($("#transferForm").valid()) {
+                var msg = "";
+                if ($("#transferType").val() === "request") {
+                    $("#transferForm").submit();
+                }
+                else if ($("#transferType").val() === "submit") {
+                    if ($("#cost").val() > @ViewBag.balance) {
+                        alert("你轉出的錢已超過你的餘額，金額請輸入"+@ViewBag.balance+"以內!");
+                        $("#cost").val("");
+                        return;
+                    } else {
+                        msg = "<h4 style=\"color:red;\">Transfer Money</h4>";
+                        $("#important").html("You are doing " + msg);
+                        $('#fSubmit').click(function () {
+                            $("#dialog").dialog("close");
+                            $("#transferForm").submit();
+                        });
+                        $("#dialog").dialog({
+                            height: 250,
+                            width: 300,
+                            modal: true
+                        });
+                    }                  
+                } else {
+                    alert("Invalid function!");
+                }
+            }
+        });
+
+
+
+    });
+
+    function getIconShowName(error) {
+        if (error === 0) {
+            return "success";
+        } else {
+            return "error";
+        }
+    }
+
+    function beforeSubmit() {
+        $("#transPw").val($("#pwcheck").val());
+        return true;
+    }
+
+</script>
+
+<div id="InfoMsg" style="text-align: center; font-size: 24px; display: none;">@Html.Raw(TempData["InfoMsg"])</div>
+<form id="transferForm" name="transferForm" action="@Url.Action("TransferEvent", "Transfer")" method="post" role="form" style="display: block;">
+    <div style="height: 400px;">
+        <div class="form-group">
+            <select name="transferType" id="transferType">
+                <option value="request" selected="selected">Request Money From</option>
+                @if (ViewBag.balance >= 0) { <option value="submit">Transfer Money To</option> }                
+            </select>
+            <div id="magicsuggest"></div><label for="usernamelist" class="error"></label>
+            <input type="hidden" id="usernamelist" name="usernamelist" />
+        </div>
+        <div class="form-group">
+            <h3>How much：</h3>
+            <input value="" type="text" balance="@(ViewBag.balance)" name="cost" id="cost" tabindex="2" class="form-control" placeholder="money"><label for="cost" class="error"></label>
+        </div>
+        <div class="form-group">
+            <h3>Memo：</h3>
+            <textarea rows="4" name="memo" id="memo" tabindex="3" class="form-control" placeholder="write down some memo if needed"></textarea><label for="memo" class="error"></label>
+        </div>
+        <input type="hidden" name="transPw" id="transPw">
+    </div>
+    <div class="form-group">
+        <div>
+            <input type="button" id="bSubmit" class="btn btn-primary" value="submit">
+        </div>
+    </div>
+</form>
+<div style="display: none;">
+    <div id="dialog" title="Password confirm">
+        <h4 id="important"></h4>
+        <input type="password" name="pwcheck" id="pwcheck" class="form-control" placeholder="password"><br/>
+        <input type="button" id="fSubmit" class="btn btn-primary" value="confirmed">
+        <form id="peddingSubmit" name="peddingSubmit" action="@Url.Action("TransferConfirm", "Transfer")" method="post" role="form" style="display: none;">
+            <h4 id="important"></h4>
+            <input type="password" name="pw" id="pw" class="form-control" placeholder="password"><br />
+            <input type="hidden" name="orderId" />
+            <input type="hidden" name="status" />
+            <input type="button" id="fSubmit" class="btn btn-primary" value="confirmed">
+        </form>
+    </div>
+</div>
+<div id="List"></div>
+<br />
+<br /><br />
+@{
+    Html.RenderAction("PartialTransferList");
+}

@@ -1,0 +1,110 @@
+﻿
+<html>
+@{Layout = null;}
+@Scripts.Render("~/bundles/jquery")
+@*<head>*@
+    <script>
+        $(document).ready(function(){
+            window.history.back();
+        })
+
+    
+    </script>
+   
+    @*<style>
+        html {
+            background: url(/images/busy.png) no-repeat center center fixed;
+            background-size: cover;
+        }
+        .message {
+            font-size: 100px;
+            font-weight: bold;
+            text-align: center;
+            color: red;
+            background-color: white;
+            display: inline-block;
+            cursor: pointer;
+            animation: color_change 5s infinite alternate; 
+        }
+        .content {
+            height: 100%;
+        }
+
+        @@keyframes color_change {
+            0% { color: blue; }
+            25% { color: orange; }
+            50% { color: purple; }
+            75% { color: green; }
+            100% { color: red; }
+        }
+    </style>
+</head>
+<body>
+<div class="content" id="box" onclick="clicked()">
+    <div class="message" id="adv">
+        <span>Server Busy</span><br>
+        <span>Click me to go back to previous page</span>
+        <span>Something is wrong, baby!!!</span><br/>
+        <span>Click me to see the detail~</span>
+    </div>
+</div>
+    <script type="text/javascript">
+    var box = document.getElementById('box');
+    var adv = document.getElementById('adv');
+    var timer = null;
+    var moveX = true;		//默认为true可以向左运动
+    var moveY = true;		//默认为true可以向上运动
+    var posX = 0;
+    var posY = 10;
+
+    timer = setInterval(move, 20);
+    function move() {
+        //水平方向
+        //如果moveX为true可以向左运动
+        if (moveX) {
+            posX--;
+            if (posX <= 0) {
+                moveX = false;
+            };
+        } else {
+            //如果moveX为false可以向右运动
+            posX++;
+            if (posX >= box.clientWidth - adv.offsetWidth) {
+                moveX = true;
+            };
+        };
+
+        //垂直方向与水平方向类似
+        if (moveY) {
+            posY--;
+            if (posY <= 0) {
+                moveY = false;
+            };
+        } else {
+            posY++;
+            if (posY >= box.clientHeight - adv.offsetHeight) {
+                moveY = true;
+            };
+        };
+        adv.style.marginLeft = posX + 'px';
+        adv.style.marginTop = posY + 'px';
+
+    }
+    //当鼠标移上时，清除计时器，停止运动
+    adv.onmouseover = function () {
+        clearInterval(timer);
+    }
+    //当鼠标移出时，继续之前的运动
+    adv.onmouseout = function () {
+        timer = setInterval(move, 20);
+    }
+
+    function clicked() {
+        //alert("Please check the log for detail!!!\r\n Will take back to previously page~");
+        window.history.back();
+    }
+    </script>
+
+</body>*@
+</html>
+

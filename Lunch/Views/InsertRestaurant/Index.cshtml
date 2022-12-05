@@ -1,0 +1,79 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Add New Restaurant</h2>
+<script>
+    function FormCheck() {
+        var n = document.forms["insert"].elements["name"].value;
+        var t = document.forms["insert"].elements["tel"].value;
+        var i = document.forms["insert"].elements["img"].value;
+        var c = document.forms["insert"].elements["category"].value;
+        if (n == null || n == "") {
+            alert("You haven't fill the restaurant's name!");
+            return false;
+        }
+        if (t == null || t == "") {
+            alert("You haven't fill the restaurant's telephone!");
+            return false;
+        }
+        if (i == null || i == "") {
+            alert("You haven't upload the restaurant's menu!");
+            return false;
+        }
+        if (c == null || i == "") {
+            alert("You haven't choose the restaurant's category!");
+            return false;
+        }
+
+    }
+    function GoBack() {
+        window.location.href = "/Restaurant/Index"
+    }
+
+    $(document).ready(function () {
+        if("@ViewBag.isSuccess" ==="true")
+        {
+            alert("Success");
+        }
+    })
+</script>
+
+<div>
+    <form name="insert" action="@Url.Action("Index")" method="post" enctype="multipart/form-data" onsubmit="return FormCheck(this)">
+        <div class="form-group">
+            <h5>Restaurant Name</h5>
+            <input type="text" id="name" name="name" algen="middle"/>
+        </div>
+        <div class="form-group">
+            <h5>Telephone Number</h5>
+            <input type="tel" id="tel" name="tel" />
+        </div>
+        <div class="form-group">
+            <h5>Category</h5>
+            <select id="category" name="category">
+                <option value=1>便當</option>               
+                <option value=2>點心</option>
+                <option value=3>飲料</option>
+                <option value=4>麵類</option>
+                <option value=5>飯類</option>
+                <option value=6>早午餐</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <h5>Menu</h5>
+            <input type="file" id="img" name="img" />
+        </div>
+        <div>
+            <input type="submit" class="btn btn-primary btn-md" value="Add Restaurant" />
+            <input type="button" class="btn btn-default btn-md" onclick="GoBack()" value="Back" />
+        </div>
+        
+       
+    </form>
+</div>

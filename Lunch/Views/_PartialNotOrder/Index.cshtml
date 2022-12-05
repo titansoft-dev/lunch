@@ -1,0 +1,49 @@
+﻿@using Lunch.Entity
+
+@{
+
+    Layout = null;
+    var noOrderCustomers = (List<Customer>)@Model.notordername;
+}
+
+<script type="text/javascript">
+    function changeRestaurant(element) {
+        location.href = "/Restaurant/Index?restaurantId=" + $(element).val();
+    }
+</script>
+
+<select id="PushedRestaurant" onchange="changeRestaurant(this)">
+    @foreach (var rest in @Model.restaurants)
+    {
+        var seleted = rest.RestaurantId == ViewBag.IsSeletedRestaurant ? "selected=\"selected\"" : string.Empty;
+        <option value="@rest.RestaurantId" @seleted>@rest.Name</option>
+    }
+</select>
+<br />
+
+
+<span>尚未點餐人數: @noOrderCustomers.Count()</span>
+<div>
+    <div>
+
+        @foreach (var rest in @Model.restaurants)
+        {
+            if (@ViewBag.IsSeletedRestaurant == rest.RestaurantId)
+            {
+                <div>
+                    <img src="@rest.MenuUrl" class="img-responsive mg-image" style="cursor: pointer;" data-toggle="modal" data-target="#myModal" data-image="@rest.MenuUrl" data-restaurant="@rest.Name" data-telephone="@rest.Telephone" data-comment="@rest.Comment" width="200"/>
+                </div>
+            }
+        }
+
+        <div>尚未點餐:</div>
+        @foreach (var notordername in noOrderCustomers)
+        {
+            <span>
+                @notordername.Name
+            </span><br>
+        }
+
+    </div>
+</div>
+

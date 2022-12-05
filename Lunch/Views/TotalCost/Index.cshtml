@@ -1,0 +1,301 @@
+﻿@{
+    if (Model.Admin == true)
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+}
+
+
+@{
+    ViewBag.Title = "Total Cost";
+}
+
+<script>
+    $(document).ready(function () {
+        if ("@ViewBag.admin" === "False") {
+            $("#settle").attr({ "type": "hidden" });
+            $("#close").attr({ "type": "hidden" });
+            $("#open").attr({ "type": "hidden" });
+        }
+    });
+    var x;
+    x=0;
+    function GoToEditPage(){
+        window.location.href="/EditOrder/Index"
+    }
+    function GoBackToRestaurant(){
+        window.location.href="/Restaurant/Index"
+    }
+    function SettleOrder(element){
+        $(element).closest("form").submit();
+    }
+    function WatchDetail(element) {
+        $.ajax({
+            url: "@Url.Action("WatchDetail","TotalCost")",
+            type: "POST",
+            data: { "Rid": $(element).closest("tr").find("input").val() },
+            success: function(pastDetailJson) {
+                var pastDetail = JSON.parse(pastDetailJson);
+                $("#restaurantImg").attr("src", pastDetail.pastRestaurant.MenuUrl);
+                $("#restaurantPhoto").text(pastDetail.pastRestaurant.Telephone);
+                var nameBuffer = '';
+                $("#OrderInfoTable").empty();
+                $("#summaryTable").empty();
+
+                if (pastDetail.pastRestaurant.IsClose) {
+                    $('#CloseLabel').show();
+                } else {
+                    $('#CloseLabel').hide();
+                }
+
+                $.each(pastDetail.detail, function(index, order) {
+                    if (order.Name == nameBuffer) {
+                        var tr = $("<tr>").attr({ "id": "order" + index });
+                        var meal = $("<td>").html(order.Meal);
+                        var cost = $("<td>").html(order.Cost);
+                        $("#OrderInfoTable").append(tr);
+                        $("#order" + index).append(meal);
+                        $("#order" + index).append(cost);
+                    } else {
+                        var tr = $("<tr>").attr({ "id": "order" + index });
+                        var name = $("<td>").attr({ "rowspan": order.NameNum }).html(order.Name);
+                        var meal = $("<td>").html(order.Meal);
+                        var cost = $("<td>").html(order.Cost);
+                        var indSum = $("<td>").attr({ "rowspan": order.NameNum }).html(order.IndSum);
+                        $("#OrderInfoTable").append(tr);
+                        $("#order" + index).append(name);
+                        $("#order" + index).append(meal);
+                        $("#order" + index).append(cost);
+                        $("#order" + index).append(indSum);
+                        nameBuffer = order.Name;
+                    }
+                });
+
+                var groupMeal = "";
+                $.each(pastDetail.summaryOrder, function (name, totalCount) {
+                    console.log(name);
+                    groupMeal += "<tr><td><span>" + name + "</span></td><td><span> " + totalCount + "</span><br></td></tr>";
+                });
+                $("#summaryTable").html(groupMeal);
+
+                $("#TodayTotal").html(pastDetail.totalAmount);
+                $("#TodayMeal").html(pastDetail.totalMeal);
+                $("#settle").attr("type", "hidden"); //怕會混淆Settle鍵，所以隱藏
+                $("#close").attr("type", "hidden"); //怕會混淆Close鍵，所以隱藏
+                $("#open").attr("type", "hidden"); //怕會混淆Open鍵，所以隱藏
+            }
+        });
+    }
+
+    function SettleNotSettledRes(element) {
+        if (confirm("Sure to SETTLE it?") == true) {
+            $(element).closest("tr").find("input").removeAttr("disabled");
+            $(element).closest("form").attr("action", "@Url.Action("SettlePastRes","TotalCost")").submit();
+        }
+        else {
+            return;
+        }
+    }
+    function DeleteNotSettle(element) {
+        if (confirm("Sure to DELETE it?") == true) {
+            $(element).closest("tr").find("input").removeAttr("disabled");
+            $(element).closest("form").attr("action", "@Url.Action("DeleteNotSettledRes","TotalCost")").submit();
+        }
+        else {
+            return;
+        }
+
+    }
+    function CloseOrder(element) {
+        $(element).closest("form").attr("action", "@Url.Action("CloseOrder","TotalCost")").submit();
+    }
+    function CloseOrderRes(element) {
+        if (confirm("Sure to CLOSE it?") == true) {
+            $(element).closest("tr").find("input").removeAttr("disabled");
+            $(element).closest("form").attr("action", "@Url.Action("CloseOrderRes","TotalCost")").submit();
+        } else {
+            return;
+        }
+    }
+    function OpenOrder(element) {
+        $(element).closest("form").attr("action", "@Url.Action("OpenOrder","TotalCost")").submit();
+    }
+    function OpenOrderRes(element) {
+        if (confirm("Sure to CLOSE it?") == true) {
+            $(element).closest("tr").find("input").removeAttr("disabled");
+            $(element).closest("form").attr("action", "@Url.Action("OpenOrderRes","TotalCost")").submit();
+        } else {
+            return;
+        }
+    }
+</script>
+
+<div>
+    <div>
+        <div class="col-lg-4">
+            <h2>餐點統計</h2>
+            <table style="width:100%" id="summaryTable">
+                @foreach (var Groupmeal in @Model.groupmeal)
+                {
+                    <tr>
+                        <td><span>@Groupmeal.Meal  </span></td>
+                        <td><span>@Groupmeal.Number</span><br></td>
+                    </tr>
+                }
+            </table>
+            <BR>
+            <div>
+                <b>今天總計:<span id="TodayTotal"></span>元</b>
+                <b style="margin-left:10%;">總數量:<span id="TodayMeal"></span>份</b>
+            </div>
+            <BR>
+
+            <div class="row">
+                <div class="col-sm-2">
+                    <form>
+                        <input type="button" class="btn-info btn-lg" value="Back" onclick="GoBackToRestaurant()" />
+                    </form>
+                </div>
+                <div class="col-sm-2 col-sm-offset-1">
+                    <form>
+                        <input type="button" class="btn-primary btn-lg" value="Edit" onclick="GoToEditPage()" />
+                    </form>
+                </div>
+            </div>
+
+            <br>
+        </div>
+
+        <div class="col-lg-4">
+            <!--第二段div-->
+            <h1>
+                電話:<span id="restaurantPhoto">@ViewBag.pushrestel</span>
+            </h1>
+            <img src="@ViewBag.pushresurl" id="restaurantImg" style="width:100%;height:100%;" />
+        </div>
+
+        <BR>
+        <div class="col-lg-4">
+            <h2>個人點餐資訊</h2>
+            <h2>
+                @ViewBag.OTime
+                <span id="CloseLabel" style="color:red;display: none">(已收單)</span>
+            </h2>
+            <!--第三段div-->
+            <table border="1" style="width: 100%">
+                <!--新版table--><!--顯示統計的table-->
+                <thead>
+                    <!--thead為標題，要與tbody一起用-->
+                    <tr>
+                        <th>Name</th>
+                        <th>Meal</th>
+                        <th>價錢</th>
+                        <th>總計</th>
+                    </tr>
+                </thead>
+                <tbody data-toggle="table" id="OrderInfoTable">
+                    <!--表格內容-->
+                    @{string nameBuffer = "";
+                        var index = 0;
+                        int TotalCost = 0;}
+
+                    @foreach (var orderinfo in @Model.orderinfo)
+                    {
+                        if (orderinfo.Name == nameBuffer)
+                        {
+                            <tr class="TotalElement+@index">
+                                <td>@orderinfo.Meal</td>
+                                <td>@orderinfo.Cost </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr class="TotalElement+@index">
+                                <td rowspan="@orderinfo.NameNum">@orderinfo.Name</td>
+                                <td>@orderinfo.Meal</td>
+                                <td>@orderinfo.Cost</td>
+                                <td rowspan="@orderinfo.NameNum">@orderinfo.IndSum</td>
+                            </tr>
+                            nameBuffer = @orderinfo.Name;
+
+                            index += 1;
+                            TotalCost += @orderinfo.IndSum;
+                        }
+                    }
+                </tbody>
+            </table>
+
+
+            <div class="row" style="margin-top:15px">
+                <form method="post" class="col-sm-2">
+                    @if (!Model.IsClose)
+                    {
+                        <input type="submit" id="settle" class="btn btn-primary btn-lg" value="Settle" name="settlebtn" disabled />
+                    }
+                    else
+                    {
+                        <input type="submit" id="settle" class="btn btn-primary btn-lg" value="Settle" name="settlebtn" />
+                    }
+                </form>
+                <form class="col-sm-2 col-sm-offset-1">
+                    @if (Model.IsClose)
+                    {
+                        <input type="button" id="open" class="btn-success btn-lg" value="Open Order" name="openbtn" onclick="OpenOrder(this)" />
+                    }
+                    else
+                    {
+                        <input type="button" id="close" class="btn-danger btn-lg" value="Close Order" name="closebtn" onclick="CloseOrder(this)" />
+                    }
+                </form>
+            </div>
+            <!--顯示尚未處理的點餐資訊-->
+            @if (ViewBag.admin)
+            {
+                <div class="row" style="margin-top:20px" width="500px">
+                    <form action="#" method="post">
+                        <table id="notSettledTable">
+                            @foreach (var notSettledRes in @Model.notSettledRes)
+                            {
+                                <tr>
+                                    <td colspan="3">
+                                        <h3>@notSettledRes.Name</h3>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <input type="hidden" name="Rid" value="@notSettledRes.RestaurantId" disabled />
+                                    <td>
+                                        <input type="button" class="btn btn-primary" style="margin-left:10px" onclick="WatchDetail(this)" value="Watch Detail" />
+                                    </td>
+                                    @if (notSettledRes.IsClose)
+                                    {
+                                        <td><input type="button" class="btn btn-primary btn-sm" style="margin-left:10px" onclick="SettleNotSettledRes(this)" value="Settle" /></td>
+                                        <td><input type="button" class="btn btn-success btn-sm" style="margin-left:10px" onclick="OpenOrderRes(this)" value="Open Order" /></td>
+                                    }
+                                    else
+                                    {
+                                        <td><input type="button" class="btn btn-primary btn-sm" style="margin-left:10px" onclick="SettleNotSettledRes(this)" value="Settle" disabled /></td>
+                                        <td><input type="button" class="btn btn-danger btn-sm" style="margin-left:10px" onclick="CloseOrderRes(this)" value="Close Order" /></td>
+                                    }
+
+                                    <td><input type="button" class="btn btn-danger btn-sm" style="margin-left:10px" onclick="DeleteNotSettle(this)" value="Delete" /></td>
+                                </tr>
+                            }
+                        </table>
+                    </form>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#TodayTotal").html("@TotalCost")
+        $("#TodayMeal").html("@Model.orderinfo.Count")
+        if (@Json.Encode(Model.IsClose))
+        {
+            $('#CloseLabel').show();
+        }
+    });
+
+</script>

@@ -1,0 +1,52 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "ResetPassword";
+}
+<script>
+    $(document).ready(function () {
+        $("#reset").click(function () {
+            var pwd1 = $("#pwd1").val();
+            var pwd2 = $("#pwd2").val()
+            if (pwd1 == "" || pwd2 == "") {
+                alert("請輸入密碼");
+            } else {
+                if ($("#pwd1").val() == $("#pwd2").val()) {
+                    $.ajax({
+                        type:"POST",
+                        url: '@Url.Action("UpdatePassword", "ResetPassword")',
+                        data: { password: $("#pwd1").val() },
+                        success: updatesuccess,
+                        error: function () {
+                            alert('fail');
+                        }
+                    })
+                    function updatesuccess() {
+                        alert("修改成功");
+                        location.reload();
+                    }
+                } else {
+                    alert("兩次密碼不相同");
+                }
+            }            
+        });
+    })
+</script>
+<h2>重設密碼</h2>
+<div class="form-group col-sm-12">
+    <div class="col-sm-4">
+        <h3>輸入密碼</h3>
+        <input class="form-control" id="pwd1" type="password" />
+    </div>
+</div>
+<div class="form-group col-sm-12">
+    <div class="col-sm-4">
+        <h3>再次確認密碼</h3>
+        <input class="form-control" id="pwd2" type="password" />
+    </div>
+</div>
+<div class="form-group col-sm-12">
+    <div class="col-sm-2">
+        <input type="submit" id="reset" class="form-control btn btn-login btn-primary" value="Submit">
+    </div>
+</div>

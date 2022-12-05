@@ -1,0 +1,64 @@
+variables:
+    NUGET_PATH: 'C:\nuget\nuget.exe'
+    MSBUILD_PATH: 'C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\MSBuild.exe'
+    PROD_TEMP_PATH:  'C:\website\GitLab-Runner\builds\qj4rhCe8\0\minions-in-house\lunch\Lunch'
+    UAT_TEMP_PATH:  'C:\website\GitLab-Runner\builds\KTxsjovR\0\minions-in-house\lunch\Lunch'
+
+stages:
+    - build
+    - deploy
+    - maintain
+
+build-staging:
+    stage: build
+    before_script:
+        - chcp 65001
+    script:
+        - '& "$env:NUGET_PATH" restore'
+        - '& "$env:MSBUILD_PATH" Lunch\Lunch.csproj /t:rebuild /p:Configuration=Release /p:Platform=AnyCPU /p:VisualStudioVersion=15.0 /p:ToolsVersion=15.0'
+    artifacts:
+        paths:
+            - Lunch\bin
+    tags:
+        - internal-system-test
+
+deploy-staging:
+    stage: deploy
+    dependencies:
+        - build-staging
+    when: manual
+    script:
+        - Start-Sleep -seconds 5
+        - (robocopy "$env:UAT_TEMP_PATH" \\10.12.1.83\website\staging\Lunch /mir /xo /e /xf Web*.config /xd images); If($LASTEXITCODE -lt 8 ){$global:LASTEXITCODE = 0}
+    tags:
+        - internal-system-test
+
+
+build-prod:
+    stage: build
+    when: manual
+    before_script:
+        - chcp 65001
+    script:
+        - '& "$env:NUGET_PATH" restore'
+        - '& "$env:MSBUILD_PATH" Lunch\Lunch.csproj /t:rebuild /p:Configuration=Release /p:Platform=AnyCPU /p:VisualStudioVersion=15.0 /p:ToolsVersion=15.0'
+    artifacts:
+        paths:
+            - Lunch\bin
+    tags:
+        - internal-system
+    only: 
+        - master
+
+deploy-prod:
+    stage: deploy
+    dependencies:
+        - build-prod
+    when: manual
+    script:
+        - Start-Sleep -seconds 5
+        - (robocopy "$env:PROD_TEMP_PATH" \\10.12.33.64\website\Lunch /mir /xo /e /xf Web*.config /xd images); If($LASTEXITCODE -lt 8 ){$global:LASTEXITCODE = 0}
+    tags:
+        - internal-system
+    only: 
+        - master
